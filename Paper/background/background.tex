@@ -24,13 +24,40 @@ The earliest chatbots used rule-based technology to respond to textual inputs. O
 
 \subsection{Structure}
 \label{sec:background_anns_structure}
-Neural networks take a series of inputs (via the input layer) and seek to predict the output (via the output layer). In order to do this, they often contain a number of `fully connected' hidden layers of a pre-determined size that consist of neurons and nodes which themselves contain weights and biases.
+Neural networks take a series of inputs (via the input layer) and seek to predict the output (via the output layer). In order to do this, they often contain a number of `fully connected' hidden layers of a pre-determined size that consist of neurons and nodes which themselves contain weights and biases. The size of the input layer is determined by the attributes/information that the model has available to it, and the size of output layer is determined by the classification/prediction problem. 
 
-Activation functions
+\begin{figure}[h]
+    \centering
+    \includegraphics[height=5.5cm] {Paper/images/neural_network_structure.jpeg} % ,trim={0 0 0 0cm},clip
+    \caption{Typical Neural Network Structure \citep{Shukla}}
+    \label{fig:neural_network_structure}
+\end{figure}
+
+This structure is shown in Figure \ref{fig:neural_network_structure}, where each grey circle denotes a node, and each interconnecting line denotes a weight between two nodes. As can be seen, each node is connected to every node in the next layer (in a fully connected layer), and the value of each node in the next layer is a weighted sum of the values of the nodes in the previous layer and their corresponding weights (and sometimes a bias term) \citep{Bishop}. The weights therefore determine how much information is passed on to each node in the next layer. The weights are analogous to the strength of connection of biological neurons, and the bias is analogous to the firing threshold.
+
+\subsection{Activation Functions}
+\label{sec:background_anns_activation_functions}
+
+The value in each node is of a neural network is typically transformed by an activation function, often Sigmoid or \acrfull{relu}. The former ensures that the values are non-linearly scaled to be between 0 and 1 using $f(x) = \frac{1}{1+e^{-x}}$, whereas the latter truncates values that were below 0 to be 0 using $f(x) = max(0, x)$. Therefore the range of a sigmoid activation function is $(0, 1)$ and the range of a \acrshort{relu} activation function is $[0, \infty]$. These activation functions, along with some other common ones, are shown in Figure \ref{fig:activation_functions}.
+
+\begin{figure}[h]
+\centering
+\includegraphics[height=5.5cm,trim={0 0 0 3.5cm},clip]{Paper/images/activation_functions.png}
+\caption{Activation Functions used in Neural Networks \citep{Udofia}}
+\label{fig:activation_functions}
+\end{figure}
+
+This process is continued for each of the (fully connected) hidden layers, until the network has calculated the values for each of the nodes in the output layer. This will typically be a proportion which, in the case of next sentence prediction, denotes the likelihood of that specific word being the next word in the sentence.
 
 \subsection{Learning}
 \label{sec:background_anns_learning}
-\acrlong{ann}s use a technique known as forward propagation
+The learning in neural networks occurs in training the weights that connect each of the nodes. \acrlong{ann}s use a technique known as forward propagation to calculate the predicted output from a given input. Initially, the weights in the network are randomly assigned \citep{Bishop}, meaning that the model has essentially no prior predictive power. For each example data point the network calculates the values for each of the nodes in the output layer; these denote "the probability that the given input fits into each of the pre-set categories" \citep{Yathish}. This process is repeated for each of the training examples, and is known as Forward Propagation. 
+
+The predicted values are subsequently compared against the expected (true) value, and the model and computes the error (the difference between the predicted and true values). This error is fed into a loss function, which a measure of the inaccuracy of the model; the aim is to minimise the loss function. For most classification problems, a Cross-entropy (log loss) function is used.
+
+Once the value for the loss function has been calculated, the model then seeks to update weights and biases in each layer, using a process called  Back-propagation \citep{Rumelhart}. This process begins by computing $\partial E/ \partial y$ for each of the output units. By using the chain rule, we can expand this
+
+
 
 \section{\acrlong{rnn}s}
 \label{sec:background_rnns}
