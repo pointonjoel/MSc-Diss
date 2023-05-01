@@ -1,0 +1,31 @@
+\chapter{Introduction}
+
+% An introduction in which you set out your objectives and briefly introduce the contents of the following chapters to give the reader an overview of what to expect.
+
+% Setting out the aims and objectives of your project, explaining the overall intention of the project and specific steps that will be taken to achieve that intention.
+
+\section{Motivation} %Explaining the problem being solved.
+\label{sec:intro_motivation}
+
+In late-2022, ChatGPT was released and left many users speechless at the quality of human-like responses and vast number of possible applications. The mass use of generative chatbots is a new phase in \acrfull{ai}. Rather than simply regurgitating facts from a knowledge base, chatbots now have the ability to learn from a corpus of text and generate their own human-like output.
+
+A chatbot is an artificial intelligence system which attempts to simulate human speech in a written manner, without a physical presence (disembodied agents) \citep{Nee2023ExploringTT}. The increased availability of high-quality, "excellent prose" generative chatbots has a number of benefits \citep{Floridi}, particularly in education, which this paper will focus on. These include literature review assistance, data analysis, summarisation of documents, and question answering \citep{lund2023chatting}. (ChatGPT was even used to assist in the generation of some BibTeX citations for this paper, to speed up referencing.) However, there are several drawbacks, particularly surrounding perpetuating bias, breaching privacy, and intellectual property rights (not to mention the environmental costs associated with training a \acrfull{llm}) \citep{Jungherr, Bender21}. When it comes to education specifically, generative chatbots pose a heightened possibility of students cheating in assessments, and the inability and unreliability of current methods (and even ChatGPT itself) to detect AI-generated text \citep{susnjak2022, Cotton}.
+
+While there is a need to improve current technology and mitigate the risks and any negative impacts, this paper seeks to focus on the opportunities available to education providers. Historically, Q\&A in the classroom has been difficult and (in higher education) is often constrained to `office hours' or `consultation hours' where lecturers can spend 1-1 time with students to assist with specific queries. However, this can mean that academics repetitively answer similar questions posed by different students. The duplication of questions can be assisted by using platforms such as \citet{Piazza} can enable students to see all queries and post their own anonymously. However, this can also lead to duplicated questions as previous questions and answers are not always seen. Additionally, the professor may need to spend a significant amount of time typing up specific answers. Consequently, there is scope for the learning experience of students to be improved.
+
+There are a number of benefits that chatbots can bring to the classroom \citep{Stanislav}. They can provide answers to \acrshort{faq}s and explain difficult concepts in plain language, which makes them popular among students. Furthermore, students can obtain answers almost instantaneously and at any hour of the day, rather than waiting hours or days for a response from their academic. Furthermore, students' research can be streamlined by pointing them to high-quality sources and finding the most relevant parts, particularly where they may have been overwhelmed by the quantity of information available on search engines \citep{Chen22}. For academics, chatbots can answer the FAQs and more simple, repetitive questions that students have. This can free up academics so that they can spend their time more efficiently, to "reinforce the learning of students", improve their teaching methods \citep{Prez2020}, and "focus on new experimental designs" \citep{Eva}.
+
+However, generative chatbots such as ChatGPT can produce errors \citep{marcus2018, Bender21, Eva}, particularly when seeking to summarise and abstract documents \citep{Durmus_2020}, and can perpetuate any bias in the training data \citep{geva2019, brown2020}. This means that students could be learning inaccurate/irrelevant information. ChatGPT itself, when asked about the drawbacks of chatbots in education, said that ``Chatbots may lack accountability for errors or malfunctions, which could result in incorrect or harmful guidance to students" \citep{chatgpt23}. Additionally, the most advanced chatbots often lack knowledge after a specific date as the training is computationally expensive and requires a large amount of time \citep{Jungherr}.
+
+\section{Aims and Objectives} %Aims and Objectives here.
+\label{sec:intro_aims_and_objectives}
+
+Consequently, this paper aims to propose an efficient model for academics to create a domain-specific knowledgeable Q\&A chatbot where academics can have high confidence in the accuracy of any answers. We seek to provide a platform that can be a"supplement to teaching and learning," rather than replace current methods entirely \citep{Nee2023ExploringTT}. This has been attempted by \citep{Chen22}, using a Deep \acrlong{cnn} (an \acrshort{lstm}-\acrshort{cnn} model). However, a comparison of different models, their training times and effectiveness in a real-world setting has not been discussed.
+
+%What are my objectives?
+
+\section{Paper Structure}
+\label{sec:intro_paper_structure}
+%Explaining what your project is meant to achieve, how it is meant to function, perhaps even a functional specification.
+
+This paper will begin by outlining the development of chatbots and the latest state-of-the-art technology used. After this, three potential models will be chosen and justified, the results of their performance will be discussed, and the best-performing model will be outlined. Finally, the findings of this paper will be summarised and complemented by a discussion of the recommended direction of future research. %against which benchmark?? 

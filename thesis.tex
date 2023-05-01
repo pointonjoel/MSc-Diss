@@ -1,0 +1,54 @@
+% Yue Li, June 2017
+
+\documentclass[a4paper2pt,twoside]{report}
+\usepackage[left=2.5cm,right=2.5cm,top=2cm,bottom=3cm]{geometry}
+
+\include{thesis.preamble}
+
+
+\begin{document}
+\let\cleardoublepage\clearpage % Prevent blank pages being added (otherwise LaTeX ensures new sections start on odd pages....)
+\title{Your Thesis Title}
+
+\author{Joel Pointon}
+\submitdate{August 2023}
+\degree{MSc Data Science}
+\studentid{10286413}
+\supervisor{Your Supervisor Name}
+
+\normallinespacing
+\maketitle
+
+% delete the two declaration sentences in thesis.sty if not applicable. 
+
+\preface
+\let\cleardoublepage\clearpage
+\input{abstract/abstract}
+\input{acknowledgements/acknowledgements}
+
+% There is a maximum limit of 20,000 words without exceeding 40 pages (A4 sides) for the main body of the dissertation that will be submitted in PDF. This limitation includes the bibliography and excludes cover/front pages (e.g., abstract, acknowledgement, table of contents) and excludes the appendices, listing of any codes or any other supporting documentation.
+% Note: Your dissertation should not exceed the word and page limits. You do not have to use up your word limit to get a good grade; never `pad out' your dissertation, this will only annoy the markers.
+
+\body
+\clearpage
+\printglossary[type=\acronymtype]
+\printglossary
+\input{introduction/introduction}
+\input{background/background}
+
+% body of thesis comes here
+\input{body/body}
+
+\input{summary/summary}
+
+\addcontentsline{toc}{chapter}{Bibliography}
+% \bibliographystyle{acm}
+\bibliographystyle{ecta} %for harvard
+\bibliography{bibliography/bibliography}
+
+% appendices come here
+
+\input{appendices/appendix}
+
+
+\end{document}
