@@ -52,12 +52,13 @@ The update gate determines how much of the memory it retains, and the reset gate
 
 \subsection{Bidirectional \acrlong{rnn}s}
 \label{sec:background_bidirectional_rnns}
-To overcome this limitation, Bidirectional \acrshort{rnn}s were developed by \citet{Schuster} and are a combination of two \acrshort{rnn}s (Section \ref{sec:background_rnns}). One processes information in the usual chronological manner, with a second processing it in reverse time order. The model is trained simultaneously on both of these and seeks to minimise the loss function for both time directions concurrently. This allows the model to capture the future context in sequences (of text).
+To overcome this limitation, Bidirectional \acrshort{rnn}s were developed by \citet{Schuster} and are a combination of two \acrshort{rnn}s (Section \ref{sec:background_rnns}). One processes information in the usual chronological manner, with a second processing it in reverse time order. The model is trained simultaneously on both of these and seeks to minimise the loss function for both time directions concurrently. This allows the model to capture the future context in sequences, which is particularly important in \acrshort{nlp} implementations because the context of words is typically derived from future words.
 
 All of the above models (\acrshort{rnn}s, \acrshort{lstm}s, and \acrshort{gru}s require sentences to be processed sequentially, and so can take a very long time to train). We will now explore 2 alternative models which seek to solve this.
 
 \section{\acrlong{cnn}s}
 \label{sec:background_cnns}
+
 
 \section{Transformers}
 \label{sec:background_transformers}
