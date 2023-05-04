@@ -41,10 +41,10 @@ This structure is shown in Figure \ref{fig:neural_network_structure}, where each
 The value in each node is of a neural network is typically transformed by an activation function, often Sigmoid or \acrfull{relu}. The former ensures that the values are non-linearly scaled to be between 0 and 1 using $f(x) = \frac{1}{1+e^{-x}}$, whereas the latter truncates values that were below 0 to be 0 using $f(x) = max(0, x)$. Therefore the range of a sigmoid activation function is $(0, 1)$ and the range of a \acrshort{relu} activation function is $[0, \infty]$. These activation functions, along with some other common ones, are shown in Figure \ref{fig:activation_functions}.
 
 \begin{figure}[h]
-\centering
-\includegraphics[height=5.5cm,trim={0 0 0 3.5cm},clip]{Paper/images/activation_functions.png}
-\caption{Activation Functions used in Neural Networks \citep{Udofia}}
-\label{fig:activation_functions}
+    \centering
+    \includegraphics[height=5.5cm,trim={0 0 0 3.5cm},clip]{Paper/images/activation_functions.png}
+    \caption{Activation Functions used in Neural Networks \citep{Udofia}}
+    \label{fig:activation_functions}
 \end{figure}
 
 This process is continued for each of the (fully connected) hidden layers, until the network has calculated the values for each of the nodes in the output layer. This will typically be a proportion which, in the case of next sentence prediction, denotes the likelihood of that specific word being the next word in the sentence.
@@ -53,29 +53,65 @@ This process is continued for each of the (fully connected) hidden layers, until
 \label{sec:background_anns_learning}
 The learning in neural networks occurs in training the weights that connect each of the nodes. \acrlong{ann}s use a technique known as forward propagation to calculate the predicted output from a given input. Initially, the weights in the network are randomly assigned \citep{Bishop}, meaning that the model has essentially no prior predictive power. For each example data point the network calculates the values for each of the nodes in the output layer; these denote "the probability that the given input fits into each of the pre-set categories" \citep{Yathish}. This process is repeated for each of the training examples, and is known as Forward Propagation. 
 
-The predicted values are subsequently compared against the expected (true) value, and the model and computes the error (the difference between the predicted and true values). This error is fed into a loss function, which a measure of the inaccuracy of the model; the aim is to minimise the loss function. For most classification problems, a Cross-entropy (log loss) function is used.
+The predicted values are subsequently compared against the expected (true) value, and the model and computes the error (the difference between the predicted and true values). This error is fed into a loss function (E), which a measure of the inaccuracy of the model; the aim is to minimise the loss function. For most classification problems, a Cross-entropy (log loss) function is used to compare the difference between the actual value ($y_i$) and the predicted value ($\hat{y_i}$) for each of the prediction classes (N):
 
-Once the value for the loss function has been calculated, the model then seeks to update weights and biases in each layer, using a process called  Back-propagation \citep{Rumelhart}. This process begins by computing $\partial E/ \partial y$ for each of the output units. By using the chain rule, we can expand this
+$$E = -\sum_i^N y_i*log(\hat{y_i})$$
 
+Once the value for the loss function has been calculated, the model then seeks to update weights and biases in each layer, using a process called Back-propagation \citep{Rumelhart}. We can define the following notation:
 
+$a_j^L$: \textit{The value of the jth note in the Lth layer}
+
+$w_{jk}^L$: \textit{The weight connecting the jth in the Lth layer and the kth note in the (L-1)th layer}
+
+$b_j^L$: \textit{The bias applied to the jth note in the Lth layer}
+
+$z_j^L = w_j^L a_j^{L-1} + b_j^L$: \textit{The value of the jth note in the Lth layer}
+
+We can therefore say that $a_j^L = \sigma(z_j^L)$, where $\sigma$ denotes the activation function.
+
+Backpropagation process begins by computing the rate of change of the cost function with respect to each of the weights (holding other weights constant) because we are seeking to minimise the cost function. This is given by:
+$$\partial E/ \partial w_{jk}^L,\quad \forall  i \in [1,n^L]$$ where $n^L$ denotes the size of the current layer. By using the chain rule, we can expand this:
+$$\frac{\partial E}{\partial w_{jk}^L} = \frac{\partial z_j^L}{\partial w_{jk}^L} \frac{\partial a_j^L}{\partial z_j^L} \frac{\partial E}{\partial a_j^L}$$ % \; can work for spacing
+Similarly, we can calculate $\partial E/ \partial b_j^L$ and $\partial E/ \partial a_j^{L-1}$. Using these, the gradient of the cost function can be computed, and used to update the parameters above so that the cost function is reduced. Gradient Descent is the process of adjusting the parameters in the `direction' indicated by the gradient of the cost function, such that the loss function is reduced. The size of adjustment is called the `learning rate', and this affects how quickly the model adjusts its parameters.
+
+This adjustment is applied to all of the network's layers as part of the backpropagation process, and for each of the training examples. One iteration of the combined training process is known as an Epoch (Forward Propagation, Cost Calculation, and Backpropagation using Gradient Descent) \citep{Sharma}, and this is applied recursively until the loss function is sufficiently small. The smaller the learning rate, the more epochs are typically required to reach the minimum loss required. Once all of the epochs are completed, the model has finished training and it has achieved the parameters which give optimal predictions.
 
 \section{\acrlong{rnn}s}
 \label{sec:background_rnns}
-\acrlong{rnn}s are a form of neural network used for sequential data. They take each element of the sequence one at a time and use the current and previous values to predict future ones. They can crudely be thought of as ``very deep feedforward networks in which all the layers share the same weights'' \citep{Yann}. However, when backpropagation is used to train the network, problems are often encountered.
+\acrlong{rnn}s are a form of neural network used for sequential data. They take each element of the sequence one at a time and use the current and previous values to predict future ones. They can crudely be thought of as ``very deep feedforward networks in which all the layers share the same weights'' \citep{Yann}. This is depicted in Figure \ref{fig:rnn_architecture}, where the input is processed sequentially ($x_{t-1}, x_{t}, x_{t+1},\ldots$), and information from the previous state is used to make the prediction in the current state ($h_{t}$). However, when backpropagation is used to train the network, problems are often encountered.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[height=4.5cm,trim={0 0 0cm 0cm},clip]{Paper/images/rnn.png}
+    \caption{Architecture of a \acrlong{rnn} \citep{olah2015understanding}}
+    \label{fig:rnn_architecture}
+\end{figure}
 
 A common problem with training neural networks is the vanishing/exploding gradient problem \citep{hochreiter1997long}. This can occur in deep neural networks but is particularly common in \acrshort{rnn}s, as the same weights are used in each iteration. The exploding gradient problem is where the model weights become exponentially large, which causes the model weights to become NAN. Alternatively, because of the recurrent structure of the model, there can be a tendency for model weights to `vanish' and tend to 0. This causes the model to have short-term memory because it fails to capture long-term dependencies \citep{chung2014empirical}. In addition to this, in both cases, the loss function is not minimised because the weights cause the loss function to either overshoot or never reach the global/local minimum.
 
 \subsection{\acrlong{lstm} Cells}
 \label{sec:background_lstms}
-\acrshort{lstm} networks are a type of \acrlong{rnn} which were developed by \citet{hochreiter1997long} in order to overcome the vanishing/exploding gradient problem. They use sigmoid and tanh activation functions as part of 3 `gates' (input gate, forget gate, and output gate) to determine how much of the long-term memory is maintained and to update both the long-term and short-term memory in each cell. They overcome the vanishing and exploding gradient problem because they control how much the gradient vanishes using the `forget gate' \citep{Gers}.
+\acrshort{lstm} networks are a type of \acrlong{rnn} which were developed by \citet{hochreiter1997long} in order to overcome the vanishing/exploding gradient problem. They are depicted in Figure \ref{fig:lstm_architecture} where, instead of one simple layer (as in Figure \ref{fig:rnn_architecture}), there are 3 layers with different activation functions. \acrshort{lstm} networks use sigmoid ($\sigma$) a activation function for each of its 3 `gates' (forget gate, input gate, and output gate) to determine how much of the long-term memory is maintained and to update both the long-term and short-term memory in each cell. The first (most left-wise neural network layer in Figure \ref{fig:lstm_architecture} is the `forget gate'. The `input gate' refers to the second layer, which is subsequently combined with a layer with a tanh activation function to update the long term memory. The final layer is the `output gate', and also uses a sigmoid activation function. By using this structure, \acrshort{lstm} networks overcome the vanishing and exploding gradient problem because they control how much the gradient vanishes using the `forget gate' \citep{Gers}.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[height=7.5cm,trim={0 0 0 0cm},clip]{Paper/images/lstm.png}
+    \caption{Architecture of an \acrlong{lstm} cell \citep{olah2015understanding}}
+    \label{fig:lstm_architecture}
+\end{figure}
 
 \subsection{\acrlong{gru}s}
 \label{sec:background_grus}
-Another similar model to \acrshort{lstm}s is the \acrfull {gru}, with an architecture based on just two gates (reset gate and update gate). It was developed in 2014 by \citet{cho2014learning} and provides a simpler architecture than the \acrshort{lstm} model. The flow of information is held using a `hidden state' and the two gates determine how much information it remembers or forgets.
+Another similar model to \acrshort{lstm}s is the \acrfull {gru}, with an architecture based on just two gates (reset gate and update gate). It was developed in 2014 by \citet{cho2014learning} and provides a simpler architecture than the \acrshort{lstm} model. This model is shown in Figure \ref{fig:gru_architecture}, which shows how the flow of information is held using a `hidden state' and the two gates (the neural network layers with sigmoid activation functions) determine how much information it remembers or forgets. The update gate determines how much of the memory it retains, and the reset gate determines how much of the memory it forgets.
 
-The update gate determines how much of the memory it retains, and the reset gate determines how much of the memory it forgets.
+\begin{figure}[h]
+    \centering
+    \includegraphics[height=4.5cm,trim={0 0 12cm 0cm},clip]{Paper/images/gru.png}
+    \caption{Architecture of a \acrlong{gru} \citep{olah2015understanding}}
+    \label{fig:gru_architecture}
+\end{figure}
 
-\acrlong{lstm} cells and \acrlong{gru}s often perform similarly effectively. However, it has been noted in the literature that \acrshort{gru}s generally outperform LSTM networks on sequences that are short and less complex, whereas \acrshort{lstm} models are typically favoured for longer and more complex sequences \citep{cahuantzi2023comparison}. This is often attributed to the \acrshort{lstm} model's ability to better capture long-term dependencies in sequences, which often means it is preferred for language modelling \citep{Irie2016}. However, both models can only capture forward dependencies, due to their sequential nature. For example, with the sentence `Joel read a book about a bass that was owned by a fisherman', using only the first 7 words, you would not know whether the word `bass' refers to the fish or the instrument. It is only with the latter parts of the sequence that you can determine the context and therefore the bass was owned by the fisherman and not the musician. Therefore, models which only capture forward dependencies will miss any potential inference based on future words. 
+The \acrlong{gru} has become popular due to its simplicity relative to the \acrshort{lstm} architecture, but \acrlong{lstm} cells and \acrlong{gru}s often perform similarly effectively. However, it has been noted in the literature that \acrshort{gru}s generally outperform LSTM networks on sequences that are short and less complex, whereas \acrshort{lstm} models are typically favoured for longer and more complex sequences \citep{cahuantzi2023comparison}. This is often attributed to the \acrshort{lstm} model's ability to better capture long-term dependencies in sequences, which often means it is preferred for language modelling \citep{Irie2016}. However, both models can only capture forward dependencies, due to their sequential nature. For example, with the sentence `Joel read a book about a bass that was owned by a fisherman', using only the first 7 words, you would not know whether the word `bass' refers to the fish or the instrument. It is only with the latter parts of the sequence that you can determine the context and therefore the bass was owned by the fisherman and not the musician. Therefore, models which only capture forward dependencies will miss any potential inference based on future words. 
 
 \subsection{Bidirectional \acrlong{rnn}s}
 \label{sec:background_bidirectional_rnns}
@@ -89,23 +125,37 @@ All of the above models (\acrshort{rnn}s, \acrshort{lstm}s, and \acrshort{gru}s 
 
 \section{Transformers}
 \label{sec:background_transformers}
+Attention is all you need
+% Taken from online:
+% Non sequential: sentences are processed as a whole rather than word by word.
+% Self Attention: this is the newly introduced 'unit' used to compute similarity scores between words in a sentence.
+% Positional embeddings: another innovation introduced to replace recurrence. The idea is to use fixed or learned weights which encode information related to a specific position of a token in a sentence
 
-\subsection{Bidirectional \acrshort{rnn}s}
 \subsection{Embeddings}
-Bengio et. al., 2003 talks about how integer IDs are inferior to vector representations of words, as vector representations enable similar words to be `close' together/have some similarity mathematically.
+For neural networks to be able to process text, a numerical representation is required. The improvement of these numeric representations has been a key advancement in the area of \acrfull{nlp}, particularly in recent years. Initial models used integer IDs in order to represent words by deriving an integer value from the frequency of a word occuring. This is known as a bag-of-words approach, and is based upon the work of \citet{Zellig}. While there have been variations upon this by using `n-grams' (collections of \textit{n} successive words, this approach is limited in its ability to capture the semantic information within a language \citep{Monisha}. In addition, this method encounters difficulty when the corpus is large and the model dictionary is very large as the model dimensionality is linearly dependent on the number of unique words.
 
-word embedding = feature vector representation of a word. But word2Vec is bad. Word2Vec generates a vector representation of words (king-woman+man=?) but it doesn't provide contextualisation. This means that you can't distinguish between a `fun fair' and a `process being fair'. Therefore it is essential to generate contextualised embeddings/representations. (this uses its placement within a sentence using the sin/cos functions? What about the sentence placement - which sentence it is?) Therefore we can have similar representations of fair/unbiased and fair/carnival.
+An alternative approach known as Word2Vec was developed by \citet{mikolov2013efficient} aimed to overcome both of these limitations by building on the work of \citet{bengio2000neural}. It is a technique which uses two-layer neural networks in order to produce learned word embeddings, so that words that have similar usage/context in the training corpus are close (have a similar cosine similarity/smallest cosine distance) in the embedding vector space. Therefore, these vectors are superior to integer IDs in containing semantic detail. We can observe this by considering a common example using the vector representations of the words king, man, and woman ($w_K$, $w_M$, and $w_W$ respectively), it can be shown that:
+\begin{equation*}
+    \begin{aligned}
+        w_K - w_M + w_W &\approx w_Q \\
+        King - Man + Woman &\approx Queen
+    \end{aligned}
+\end{equation*}
+Where $w_Q$ denotes the vector representation for 'Queen', which is the word with the smallest cosine distance to the above calculation \citep{allen2019analogies}.
 
-Use BERT's pre-training (Self-supervison) to generate contextual encodings for words? And then use fine-tuning/feature-based approach for use with another model.
+\cite{mikolov2013efficient} proposed two possible approaches: one is to use the surrounding words to predict the `current' one (\acrfull{cbow}) and the other is where the `current' word is used to predict the surrounding ones (Skip Gram). A key feature of this approach is that each vector describes the context of the word by considering neighboring tokens, rather than the word itself \citep{li2018introduction}. However, this approach cannot handle words that are not in the training corpus. Additionally, words of opposite sentiment such as “good” and “bad” are closely located in the vector space \citep{sivakumar2020review}, due to the limitations of using a \acrshort{cbow} or Skip Gram approach.
 
+% NOT FOR WORD2VEC: A key benefit of this approach is that vectorised word embeddings have the potential to detect and classify words that are previously unseen to the model \citep{Rudkowsky}.
 
+Word2Vec and other similar embeddings such as Glove \citep{Pennington} have long been the industry standard. However, a key limitation is the inability to provide contextualisation. For example, such models provide one vector per word and, as such, they are unable to distinguish between a `fun fair' and a `process being fair', for example. Therefore it is essential to generate contextualised embeddings to represent words. %(this uses its placement within a sentence using the sin/cos functions? What about the sentence placement - which sentence it is?) Therefore we can have similar representations of fair/unbiased and fair/carnival.
 
+\acrfull{bert} was developed in order by \citet{devlin2019bert} to overcome this limitation, taking into account both left and right context (i.e. words before and after the current word). Previous models such as \acrshort{elmo} used \acrshort{cnn} and \acrshort{lstm} architecture \citep{peters2018deep}, but \acrshort{bert} dispensed with this technology, using a series of stacked encoders and is trained using masked-language modeling and next sentence prediction. %Use BERT's pre-training (Self-supervison) to generate contextual encodings for words? And then use fine-tuning/feature-based approach for use with another model.
 
 
 
 % ----------------------------------------------------------------------------------------------------------------------
 History of improvements: 
-ELMo - 2 bi-directional RNNs. But it is an LSTM and so doesn't make use of GPUs and so it very slow.
+ELMo - A character-level CNN combined with 2 bi-directional RNNs. However, because it uses LSTM architecture, it doesn't make use of GPUs and so it very slow.
 Transformer Neural Networks - encoders and decoders
 OpenAI's GPT uses stacked decoders
 BERT uses stacked encoders - masked language model and next sentence prediction.

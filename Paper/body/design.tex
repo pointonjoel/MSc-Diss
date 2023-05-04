@@ -1,5 +1,19 @@
 \chapter{Design}
 
-Containing a comprehensive description of the design chosen, how it addresses the problem, and why it is designed the way it is.
+Containing a comprehensive description of the design chosen, how it addresses the problem, and why it is designed the way it is. GPT-4 vs BERT vs CNN?
+
+GPT-4: simple and easy to setup, less computationally expensive. Can provide the source used. BIG PLUS. Can also provide desired (and undesired) output to train the model. Moderation can be implemented easily. However, can we be 100\% sure it won't provide information from other sources?  
 
 % INCLUDE JUSTIFICATION FOR THE MODELS CHOSEN!!
+
+CNN works well on GPUs because it parallelises well
+Word-level is better because we don't have lots of documents and there aren't loads of spelling mistakes
+
+
+%"Semantic Search + GPT QnA can generate more context-specific and precise answers by grounding answers in specific passages from relevant documents. However, fine-tuned GPT models might generate answers based on the general knowledge embedded in the model, which might be less precise or unrelated to the question's context." https://blog.futuresmart.ai/building-a-document-based-question-answering-system-with-langchain-pinecone-and-llms-like-gpt-4-and-chatgpt
+
+% Why search is better than fine-tuning: GPT can learn knowledge in two ways: Via model weights (i.e., fine-tune the model on a training set) and Via model inputs (i.e., insert the knowledge into an input message). Although fine-tuning can feel like the more natural option—training on data is how GPT learned all of its other knowledge, after all—we generally do not recommend it as a way to teach the model knowledge. Fine-tuning is better suited to teaching specialized tasks or styles, and is less reliable for factual recall. As an analogy, model weights are like long-term memory. When you fine-tune a model, it's like studying for an exam a week away. When the exam arrives, the model may forget details, or misremember facts it never read. In contrast, message inputs are like short-term memory. When you insert knowledge into a message, it's like taking an exam with open notes. With notes in hand, the model is more likely to arrive at correct answers. One downside of text search relative to fine-tuning is that each model is limited by a maximum amount of text it can read at once.....
+% Also:  In general, search-based systems do best on questions that have a simple lookup, and worst on questions that require multiple partial sources to be combined and reasoned about. https://github.com/openai/openai-cookbook/blob/main/examples/Question_answering_using_embeddings.ipynb
+
+
+%"Luckily there exists a simple approach that eliminates all these three challenges in one swoop, called open-book generative question answering. This method adds another AI called the ‘retriever’ (i.e the open book) to help GPT-4. This retriever will search through the organization's documents in order to find the most relevant information needed for answering the question. GPT-4 is then forced to only use the provided information to answer the question, which prevents it from making something up. While answering, GPT-4 can also be forced to reference the source of the information, which then enables the user to easily verify the answer. Finally, this approach requires no further training of GPT-4. In other words, this solution saves a lot of time and effort while providing a better and more useful result." https://insights.radix.ai/blog/chat-with-your-data-using-gpt-4
