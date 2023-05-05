@@ -8,9 +8,14 @@
 Explaining what your project does that is new or is better than existing work in the same field.
 
 \section{Embeddings}
-For \acrshort{ai} models to be able to process text, a numerical representation is required. The improvement of these numeric representations has been a key advancement in the area of \acrfull{nlp}, particularly in recent years. Initial models used integer IDs in order to represent words by deriving an integer value from the frequency of a word occuring. This is known as a bag-of-words approach, and is based upon the work of \citet{Zellig}. While there have been variations upon this by using `n-grams' (collections of \textit{n} successive words, this approach is limited in its ability to capture the semantic information within a language \citep{Monisha}. In addition, this method encounters difficulty when the corpus is large and the model dictionary is very large as the model dimensionality is linearly dependent on the number of unique words.
+\label{sec:embeddings}
 
-An alternative approach known as Word2Vec was developed by \citet{mikolov2013efficient} aimed to overcome both of these limitations by building on the work of \citet{bengio2000neural}. It is a technique which uses two-layer neural networks (see Section \ref{fig:background_anns}) in order to produce learned word embeddings, so that words that have similar usage/context in the training corpus are close (have a similar cosine similarity/smallest cosine distance) in the embedding vector space. Therefore, these vectors are superior to integer IDs in containing semantic detail. We can observe this by considering a common example using the vector representations of the words king, man, and woman ($w_K$, $w_M$, and $w_W$ respectively), it can be shown that:
+For \acrshort{ai} models to be able to process text, a numerical representation is required. The improvement of these numeric representations has been a key advancement in the area of \acrfull{nlp}, particularly in recent years. Initial models used integer IDs in order to represent words by deriving an integer value from the frequency of a word occuring. This is known as a bag-of-words approach, and is based upon the work of \citet{Zellig}. While there have been variations upon this by using `n-grams' (collections of \textit{n} successive words, this approach is limited in its ability to capture the semantic information within a language \citep{Monisha}. In addition, this method encounters difficulty when the corpus is large and the model dictionary is very large as the model dimensionality is linearly dependent on the number of unique words. 
+
+\subsection{Word2Vec}
+\label{sec:embeddings_word2vec}
+
+An alternative approach known as Word2Vec was developed by \citet{mikolov2013efficient} aimed to overcome both of these limitations by building on the work of \citet{bengio2000neural}. It is a technique which uses two-layer neural networks (see Section \ref{sec:background_anns}) in order to produce learned word embeddings, so that words that have similar usage/context in the training corpus are close (have a similar cosine similarity/smallest cosine distance) in the embedding vector space. Therefore, these vectors are superior to integer IDs in containing semantic detail. We can observe this by considering a common example using the vector representations of the words king, man, and woman ($w_K$, $w_M$, and $w_W$ respectively), it can be shown that:
 \begin{equation*}
     \begin{aligned}
         w_K - w_M + w_W &\approx w_Q \\
@@ -23,7 +28,10 @@ Where $w_Q$ denotes the vector representation for 'Queen', which is the word wit
 
 % NOT FOR WORD2VEC: A key benefit of this approach is that vectorised word embeddings have the potential to detect and classify words that are previously unseen to the model \citep{Rudkowsky}.
 
-Word2Vec and other similar embeddings such as \acrshort{glove} \citep{Pennington} have long been the industry standard. However, a key limitation is the inability to provide contextualisation. For example, such models provide one vector per word and, as such, they are unable to distinguish between a `fun fair' and a `process being fair', for example. This is because they ignore the ordering of the words and, crucially, simply produce one vector representation per word. Therefore it is essential to generate contextualised embeddings to represent words. Models such as \acrfull{bert} was developed in order by \citet{devlin2019bert} to overcome this limitation, taking into account both left and right context (i.e. words before and after the current word). \textcolor{red}{THIS SEEMS INCOMPLETE/DOESN'T LINK WELL WITH THE NEXT SECTION}.
+\subsection{Context}
+\label{sec:embeddings_context}
+
+Word2Vec and other similar embeddings such as \acrshort{glove} \citep{Pennington} have long been the industry standard. However, a key limitation is the inability to provide contextualisation. For example, such models provide one vector per word and, as such, they are unable to distinguish between a `fun fair' and a `process being fair', for example. This is because they ignore the ordering of the words and, crucially, simply produce one vector representation per word. Therefore it is essential to generate contextualised embeddings to represent words. Models such as \acrfull{bert} was developed in order by \citet{devlin2019bert} to overcome this limitation, taking into account both left and right context (i.e. words before and after the current word). \textcolor{red}{How do they do this? THIS SEEMS INCOMPLETE/DOESN'T LINK WELL WITH THE NEXT SECTION}.
 
 %(this uses its placement within a sentence using the sin/cos functions? What about the sentence placement - which sentence it is?) Therefore we can have similar representations of fair/unbiased and fair/carnival.
 
@@ -35,6 +43,7 @@ Word2Vec and other similar embeddings such as \acrshort{glove} \citep{Pennington
 
 \section{Early Chatbots}
 \label{sec:background_early_chatbots}
+
 The earliest chatbots used rule-based technology to respond to textual inputs. One of the earliest chatbots was Eliza, created in 1966 by researchers at MIT to pass the Turing Test \citep{zemvcik2019}. It used pattern matching to be able to construct human-like replies \citep{Luka}. However, the responses were often formulaic and predictable. Such systems were limited by the complexity of natural language, as it is highly difficult and inefficient to generate rules to handle every possible query. A number of adaptations have been made since these early frameworks, which are outlined below.
 
 %The development of \acrfull{ai} and \acrfull{nlp} meant that chatbots began to learn from data and
@@ -46,6 +55,7 @@ The earliest chatbots used rule-based technology to respond to textual inputs. O
 
 \subsection{Structure}
 \label{sec:background_anns_structure}
+
 Neural networks take a series of inputs (via the input layer) and seek to predict the output (via the output layer). In order to do this, they often contain a number of `fully connected' hidden layers of a pre-determined size that consist of neurons and nodes which themselves contain weights and biases. The size of the input layer is determined by the attributes/information that the model has available to it, and the size of output layer is determined by the classification/prediction problem. 
 
 \begin{figure}[h]
@@ -73,6 +83,7 @@ This process is continued for each of the (fully connected) hidden layers, until
 
 \subsection{Learning}
 \label{sec:background_anns_learning}
+
 The learning in neural networks occurs in training the weights that connect each of the nodes. \acrlong{ann}s use a technique known as forward propagation to calculate the predicted output from a given input. Initially, the weights in the network are randomly assigned \citep{Bishop}, meaning that the model has essentially no prior predictive power. For each example data point the network calculates the values for each of the nodes in the output layer; these denote "the probability that the given input fits into each of the pre-set categories" \citep{Yathish}. This process is repeated for each of the training examples, and is known as Forward Propagation. 
 
 The predicted values are subsequently compared against the expected (true) value, and the model and computes the error (the difference between the predicted and true values). This error is fed into a loss function (E), which a measure of the inaccuracy of the model; the aim is to minimise the loss function. For most classification problems, a Cross-entropy (log loss) function is used to compare the difference between the actual value ($y_i$) and the predicted value ($\hat{y_i}$) for each of the prediction classes (N):
@@ -100,6 +111,7 @@ This adjustment is applied to all of the network's layers as part of the backpro
 
 \section{\acrlong{rnn}s}
 \label{sec:background_rnns}
+
 \acrlong{rnn}s are a form of neural network used for sequential data. They take each element of the sequence one at a time and use the current and previous values to predict future ones. They can crudely be thought of as ``very deep feedforward networks in which all the layers share the same weights'' \citep{Yann}. This is depicted in Figure \ref{fig:rnn_architecture}, where the input is processed sequentially ($x_{t-1}, x_{t}, x_{t+1},\ldots$), and information from the previous state is used to make the prediction in the current state ($h_{t}$). However, when backpropagation is used to train the network, problems are often encountered.
 
 \begin{figure}[h]
@@ -113,6 +125,7 @@ A common problem with training neural networks is the vanishing/exploding gradie
 
 \subsection{\acrlong{lstm} Cells}
 \label{sec:background_lstms}
+
 \acrshort{lstm} networks are a type of \acrlong{rnn} which were developed by \citet{hochreiter1997long} in order to overcome the vanishing/exploding gradient problem. They are depicted in Figure \ref{fig:lstm_architecture} where, instead of one simple layer (as in Figure \ref{fig:rnn_architecture}), there are 3 layers with different activation functions. \acrshort{lstm} networks use sigmoid ($\sigma$) a activation function for each of its 3 `gates' (forget gate, input gate, and output gate) to determine how much of the long-term memory is maintained and to update both the long-term and short-term memory in each cell. The first (most left-wise neural network layer in Figure \ref{fig:lstm_architecture} is the `forget gate'. The `input gate' refers to the second layer, which is subsequently combined with a layer with a tanh activation function to update the long term memory. The final layer is the `output gate', and also uses a sigmoid activation function. By using this structure, \acrshort{lstm} networks overcome the vanishing and exploding gradient problem because they control how much the gradient vanishes using the `forget gate' \citep{Gers}.
 
 \begin{figure}[h]
@@ -124,6 +137,7 @@ A common problem with training neural networks is the vanishing/exploding gradie
 
 \subsection{\acrlong{gru}s}
 \label{sec:background_grus}
+
 Another similar model to \acrshort{lstm}s is the \acrfull {gru}, with an architecture based on just two gates (reset gate and update gate). It was developed in 2014 by \citet{cho2014learning} and provides a simpler architecture than the \acrshort{lstm} model. This model is shown in Figure \ref{fig:gru_architecture}, which shows how the flow of information is held using a `hidden state' and the two gates (the neural network layers with sigmoid activation functions) determine how much information it remembers or forgets. The update gate determines how much of the memory it retains, and the reset gate determines how much of the memory it forgets.
 
 \begin{figure}[h]
@@ -137,17 +151,31 @@ The \acrlong{gru} has become popular due to its simplicity relative to the \acrs
 
 \subsection{Bidirectional \acrlong{rnn}s}
 \label{sec:background_bidirectional_rnns}
+
 To overcome this limitation, Bidirectional \acrshort{rnn}s were developed by \citet{Schuster} and are a combination of two \acrshort{rnn}s (Section \ref{sec:background_rnns}). One processes information in the usual chronological manner, with a second processing it in reverse time order. The model is trained simultaneously on both of these and seeks to minimise the loss function for both time directions concurrently. This allows the model to capture the future context in sequences, which is particularly important in \acrshort{nlp} implementations because the context of words is typically derived from future words.
 
-All of the above models (\acrshort{rnn}s, \acrshort{lstm}s, and \acrshort{gru}s require sentences to be processed sequentially, and so can take a very long time to train). We will now explore 2 alternative models which seek to solve this.
+All of the above models (\acrshort{rnn}s, \acrshort{lstm}s, and \acrshort{gru}s) require sentences to be processed sequentially, and so can take a long time to train especially when there are long strings to process, and can have convergence issues due to vanishing/exploding gradients \citep{vaswani2017attention, Lipton}. We will now explore 2 alternative models which seek to solve this.
 
 \section{\acrlong{cnn}s}
 \label{sec:background_cnns}
 
+A popular varation of the vanilla neural network is the \acrfull{cnn}. It uses convolutions for feature extraction which is then fed into a fully connected neural network for the classification \citep{Budiharto}, and is efficient as convolutions perform well on \acrshort{gpu}s. They have been used to produce \acrfull{sota} results in image classification \citep{krizhevsky2017imagenet}, but can also be successfully applied to \acrshort{nlp} tasks \citep{kim2014convolutional}.
+
+The architecture is outlined in Figure \ref{fig:cnn_architecture}. The model begins by convolving multiple matrix filters over the concatenated vector representation of the input sequence (often word2Vec; see Section \ref{sec:embeddings_word2vec}) in order to extract
+patterns in the input. Each convolutional layer typically contains a non-linear activation function (Section \ref{sec:background_anns_activation_functions}), after which pooling is used to reduce dimensionality without losing the most important information \citep{Severyn2015UNITNTD}. Typically, max pooling is used. The final layer is a fully connected softmax layer which outputs the probability distribution of the various output classes (e.g. sentence sentiment).
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[height=6cm,trim={0 0 0cm 0cm},clip]{paper/images/cnn.png}
+    \caption{Architecture of a \acrlong{cnn} \citep{Severyn2015UNITNTD}}
+    \label{fig:cnn_architecture}
+\end{figure}
+
+%Deep learning is a subfield of Machine Learning, with vast applications, particularly within computer vision and \acrshort{nlp}.
 
 \section{Transformers}
 \label{sec:background_transformers}
-Transformers were introduced in \citeauthor{vaswani2017attention}'s 'Attention Is All You Need' paper. The authors proposed a sequence-to-sequence model which uses $N=6$ stacked encoders and decoders (although subsequent models use varying numbers of encoders and/or decoders). The strength of Transformers lies in their ability to process all words a sentence simultaneously (the sequential nature of \acrshort{lstm} networks made them slow to train), and their ability to retain context from much further back in the sequence \cite{vaswani2017attention}.
+Transformers were introduced in \citeauthor{vaswani2017attention}'s 'Attention Is All You Need' paper (\citeyear{vaswani2017attention}). The authors proposed a sequence-to-sequence model which uses $N=6$ stacked encoders and decoders (although subsequent models use varying numbers of encoders and/or decoders). The strength of Transformers lies in their ability to process all words a sentence simultaneously (the sequential nature of \acrshort{lstm} networks made them slow to train), and their ability to retain context from much further back in the sequence \cite{vaswani2017attention}. 
 
 While there are many variations, the initial model architecture is shown in Figure \ref{fig:transformer_architecture}. It begins by taking initial embeddings (learned embeddings such as word2Vec - Google's \acrshort{bert} uses wordpiece tokenisation in order to easily handle out-of-vocabulary words \citep{wu2016googles}), and applies a vector containing positional encodings for each word (using $sin$ and $cos$ functions). These positional encodings are then passed into the encoder block.
 
@@ -164,82 +192,26 @@ An encoder consists of a multi-headed attention block combined with a feed-forwa
 \subsection{Decoder}
 The decoder uses a similar architecture to the encoder, but uses masking to prevent the model from `seeing ahead' in the sentence. For example, to translate the phrase ``Esta es una tesis fantástica'' from Spanish to English, the model should not see any word ``tesis fantástica'' when calculating the self-attention for the phrase ``Esta es una''. This means that the model has unidirectional-context (typically only left-context). Once the masked multi-headed attention vectors have been calculated, the decoder combines this with the output from the encoder using another multi-headed attention block. Finally this information is passed into a feed-forward neural network to produce the prediction for the next word in the sequence until an end of sentence token (<EOS>) is produced.
 
+\subsection{Variations}
+There are multiple variations of the transformer architecture.
+They broadly fit into 3 categories. The first is autoencoding (bidirectional) models which use stacked encoders (e.g. \acrshort{bert} \citep{devlin2019bert}); the second is autoregressive (left-context) models which use stacked decoders (e.g. \acrshort{gpt} \citep{radford2018improving}); the third is a combination of both, using both stacked encoders and decoders (e.g. \acrshort{bart} \citep{lewis2019bart}), and these are known as sequence-to-sequence models. % BART is seen as one fo the best models for extractive question answering \citep{pearce2021comparative}.
+
+% ----------------------------------------------------------------------------------------------------------------------
 
 % Taken from online:
 % Non sequential: sentences are processed as a whole rather than word by word.
 % Self Attention: this is the newly introduced 'unit' used to compute similarity scores between words in a sentence.
 % Positional embeddings: another innovation introduced to replace recurrence. The idea is to use fixed or learned weights which encode information related to a specific position of a token in a sentence
 
-% ----------------------------------------------------------------------------------------------------------------------
-History of improvements: 
-ELMo - A character-level CNN combined with 2 bi-directional RNNs. However, because it uses LSTM architecture, it doesn't make use of GPUs and so it very slow.
-Transformer Neural Networks - encoders and decoders
-OpenAI's GPT uses stacked decoders
-BERT uses stacked encoders - masked language model and next sentence prediction.
-BART uses both - BART is a seq2seq model (a denoising autoencoder). One of the best models for extractive question answering in \citet{pearce2021comparative}
+% IBM Watson was famously developed to compete on the quiz show Jeproady! and beat the then-champions to win 1st prize https://web.archive.org/web/20130616092431/http://www.jeopardy.com/news/watson1x7ap4.php
 
-Autoencoding models: BERT
-Autoregressive models: GPT
-seq2seq models: BART
+% question answering chatbots have gone from extractive question answering to generative question answering, where they use probabilities to generate text. By learning the patterns and semantics of language, it can generate human-like responses. Initially, Markov Chains were used to generate the most probable characters or words in the output (e.g. HeX) \citep{Luka, Ahmad}.
 
-"GPT-3 is an autoregressive model, while BERT is bidirectional. While GPT-3 only considers the left context when making predictions, BERT takes into account both left and right context."
-
-RNNs have historically been the industry standard, due to the sequential structure of language, but they are slow to train (due to sequential processing of each token) \citep{vaswani2017attention}, especially when there are long strings to process, and can have convergence issues due to vanishing/exploding gradients \citep{Lipton}.
-
-% From file:///C:/Users/point/Downloads/QA-CEP-2020.pdf:
-• Much early NLP work attempted reading comprehension
-– Schank, Abelson, Lehnert et al. c. 1977 – “Yale A.I. Project”
-• Revived by Lynette Hirschman in 1999:
-– Could NLP systems answer human reading comprehension questions for 
-3rd to 6th graders? Simple methods attempted.
-• Revived again by Chris Burges in 2013 with MCTest
-– Again answering questions over simple story texts
-• Floodgates opened in 2015/16 with the production of large datasets which 
-permit supervised neural systems to be built
-– Hermann et al. (NIPS 2015) DeepMind CNN/DM dataset
-– Rajpurkar et al. (EMNLP 2016) SQuAD
-– MS MARCO, TriviaQA, RACE, NewsQA, NarrativeQA, HotpotQA
-%
-
-Not simply question answering (copying and pasting an answer), but generative question answering (generate text/summarise text to provide an answer)
-
-Use hugging face library - many pre-trained models
-
-IBM Watson was famously developed to compete on the quiz show Jeproady! and beat the then-champions to win 1st prize https://web.archive.org/web/20130616092431/http://www.jeopardy.com/news/watson1x7ap4.php
+%"A comparative study of CNN and RNN for NLP explored by Yin et  al. [http://arxiv.org/abs/1702.01923] shows that RNN performs better than CNN in most of the NLP tasks" https://journalofbigdata.springeropen.com/articles/10.1186/s40537-020-00341-6
 
 
- 
+% Squad \acrshort{squad} data reference: http://arxiv.org/abs/1606.05250, and for squad 2.0: http://arxiv.org/abs/1806.03822
 
-Complexity of human language means that a `bag-of-words' approach can only have limited success in understanding human language.
+%By using a BiDAF combined with RNN and CNN encoders, \citep{Budiharto} found that an RNN-based encoder had a higher F1-score than a CNN-based encoder when using the \acrshort{squad} dataset.
 
-Context.
-
-neural networks and convolutional neural networks have been used to improve chatbot performance.
-
-question answering chatbots have gone from ***? question answering to generative question answering, where they use probabilities to generate text. By learning the patterns and semantics of language, it can generate human-like responses. Initially, Markov Chains were used to generate the most probable characters or words in the output (e.g. HeX) \citep{Luka, Ahmad}. 
-
-BERT (Devlin et al., 2019), T5 (Raffel et al., 2019), and GPT-3 (Brown et al., 2020)
-
-A CNN uses convolutions for feature extraction and a fully connected neural network for the classification \citep{Budiharto}. "RNN excels in the sequence of data, like time series or sentence, but RNN has a problem in long-term dependency (the capability to remember information for a long period of time). Long Short Term Memory (LSTM) and Gated Recurrent Unit (GRU) are the improvements of RNN. LSTM composed of a cell, an input gate, an output gate and a forget gate. Memory cells and gate units in LSTM learns to protect the constant error flow within the memory cell from perturbation by irrelevant inputs [18]. GRU consists of two gates, Reset Gate and Update Gate [19]. Te Update Gate is the merging of Forget Gate and Input Gate in LSTM."
-
-Deep learning is a subfield of Machine Learning, with vast applications, particularly within computer vision and \acrshort{nlp}
-
-"A comparative study of CNN and RNN for NLP explored by Yin et  al. [http://arxiv.org/abs/1702.01923] shows that RNN performs better than CNN in most of the NLP tasks" https://journalofbigdata.springeropen.com/articles/10.1186/s40537-020-00341-6
-
-
-Squad \acrshort{squad} data reference: http://arxiv.org/abs/1606.05250, and for squad 2.0: http://arxiv.org/abs/1806.03822
-
-By using a BiDAF combined with RNN and CNN encoders, \citep{Budiharto} found that an RNN-based encoder had a higher F1-score than a CNN-based encoder when using the \acrshort{squad} dataset.
-
-Translation, sentiment analysis and emotion detection \citep{Hirschberg}
-
-
-
-From ChatGPT:
-1. Rule-Based Chatbots: Limited, inflexible, and prescriptive responses.
-
-2. Natural Language Processing (NLP): Supports the understanding and interpretation of language
-
-3. Machine Learning (ML): Learn from user interactions and improve responses over time by identifying patterns in user input and tailor their responses accordingly.
-
-4. Artificial Inteligence (AI): Specifically deep learning, which enabled the understanding of context and means chatbots can provide personalized responses.
+%Translation, sentiment analysis and emotion detection \citep{Hirschberg}

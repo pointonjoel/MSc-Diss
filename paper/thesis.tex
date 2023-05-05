@@ -3,18 +3,18 @@
 \documentclass[a4paper2pt,twoside]{report}
 \usepackage[left=2.5cm,right=2.5cm,top=2cm,bottom=3cm]{geometry}
 
-\include{paper/thesis.preamble}
+\input{paper/thesis.preamble}
 
 
 \begin{document}
 \let\cleardoublepage\clearpage % Prevent blank pages being added (otherwise LaTeX ensures new sections start on odd pages....)
-\title{Have You Tried Turning It Off and On Again? Pressing reset with a novel framework for the use of AI chatbots in education} %Chatbots 2.0: A Novel Framework for Educating the Next Generation
+\title{Have You Tried Turning It Off and On Again? Pressing reset with a novel framework for the use of deep learning chatbots in education} %Chatbots 2.0: A Novel Framework for Educating the Next Generation
 
 \author{Joel Pointon}
 \submitdate{August 2023}
 \degree{MSc Data Science}
 \studentid{10286413}
-\supervisor{Your Supervisor Name}
+\supervisor{Tissa Chandesa}
 
 \normallinespacing
 \maketitle
@@ -30,9 +30,9 @@
 % Note: Your dissertation should not exceed the word and page limits. You do not have to use up your word limit to get a good grade; never `pad out' your dissertation, this will only annoy the markers.
 
 \body
-% \clearpage
-% \printglossary[type=\acronymtype]
-% \printglossary
+\clearpage
+\printnoidxglossaries%[type=\acronymtype]
+% \printglossaries
 \input{paper/introduction/introduction}
 \input{paper/background/background}
 
@@ -49,10 +49,5 @@
 % appendices come here
 
 \input{paper/appendices/appendix}
-
-\clearpage
-\printglossary[type=\acronymtype]
-\printglossary
-
 
 \end{document}
