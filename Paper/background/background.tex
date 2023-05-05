@@ -7,12 +7,34 @@
 
 Explaining what your project does that is new or is better than existing work in the same field.
 
+\section{Embeddings}
+For \acrshort{ai} models to be able to process text, a numerical representation is required. The improvement of these numeric representations has been a key advancement in the area of \acrfull{nlp}, particularly in recent years. Initial models used integer IDs in order to represent words by deriving an integer value from the frequency of a word occuring. This is known as a bag-of-words approach, and is based upon the work of \citet{Zellig}. While there have been variations upon this by using `n-grams' (collections of \textit{n} successive words, this approach is limited in its ability to capture the semantic information within a language \citep{Monisha}. In addition, this method encounters difficulty when the corpus is large and the model dictionary is very large as the model dimensionality is linearly dependent on the number of unique words.
 
+An alternative approach known as Word2Vec was developed by \citet{mikolov2013efficient} aimed to overcome both of these limitations by building on the work of \citet{bengio2000neural}. It is a technique which uses two-layer neural networks (see Section \ref{fig:background_anns}) in order to produce learned word embeddings, so that words that have similar usage/context in the training corpus are close (have a similar cosine similarity/smallest cosine distance) in the embedding vector space. Therefore, these vectors are superior to integer IDs in containing semantic detail. We can observe this by considering a common example using the vector representations of the words king, man, and woman ($w_K$, $w_M$, and $w_W$ respectively), it can be shown that:
+\begin{equation*}
+    \begin{aligned}
+        w_K - w_M + w_W &\approx w_Q \\
+        King - Man + Woman &\approx Queen
+    \end{aligned}
+\end{equation*}
+Where $w_Q$ denotes the vector representation for 'Queen', which is the word with the smallest cosine distance to the above calculation \citep{allen2019analogies}.
 
-Talk through different models and their strengths/weaknesses:
+\cite{mikolov2013efficient} proposed two possible approaches: one is to use the surrounding words to predict the `current' one (\acrfull{cbow}) and the other is where the `current' word is used to predict the surrounding ones (Skip Gram). A key feature of this approach is that each vector describes the context of the word by considering neighboring tokens, rather than the word itself \citep{li2018introduction}. However, this approach cannot handle words that are not in the training corpus. Additionally, words of opposite sentiment such as “good” and “bad” are closely located in the vector space \citep{sivakumar2020review}, due to the limitations of using a \acrshort{cbow} or Skip Gram approach.
+
+% NOT FOR WORD2VEC: A key benefit of this approach is that vectorised word embeddings have the potential to detect and classify words that are previously unseen to the model \citep{Rudkowsky}.
+
+Word2Vec and other similar embeddings such as \acrshort{glove} \citep{Pennington} have long been the industry standard. However, a key limitation is the inability to provide contextualisation. For example, such models provide one vector per word and, as such, they are unable to distinguish between a `fun fair' and a `process being fair', for example. This is because they ignore the ordering of the words and, crucially, simply produce one vector representation per word. Therefore it is essential to generate contextualised embeddings to represent words. Models such as \acrfull{bert} was developed in order by \citet{devlin2019bert} to overcome this limitation, taking into account both left and right context (i.e. words before and after the current word). \textcolor{red}{THIS SEEMS INCOMPLETE/DOESN'T LINK WELL WITH THE NEXT SECTION}.
+
+%(this uses its placement within a sentence using the sin/cos functions? What about the sentence placement - which sentence it is?) Therefore we can have similar representations of fair/unbiased and fair/carnival.
+
+%\acrfull{bert} was developed in order by \citet{devlin2019bert} to overcome this limitation, taking into account both left and right context (i.e. words before and after the current word). Previous models such as \acrshort{elmo} used \acrshort{cnn} and \acrshort{lstm} architecture \citep{peters2018deep}, but \acrshort{bert} dispensed with this technology, using a series of stacked encoders and is trained using masked-language modeling and next sentence prediction. By using Transformers instead of  
+
+%Use BERT's pre-training (Self-supervison) to generate contextual encodings for words? And then use fine-tuning/feature-based approach for use with another model.
+
+%BERT can understand previously unseen/rare words by breaking them into sub-words (`wordpieces') \citep{wu2016googles}.
+
 \section{Early Chatbots}
 \label{sec:background_early_chatbots}
-
 The earliest chatbots used rule-based technology to respond to textual inputs. One of the earliest chatbots was Eliza, created in 1966 by researchers at MIT to pass the Turing Test \citep{zemvcik2019}. It used pattern matching to be able to construct human-like replies \citep{Luka}. However, the responses were often formulaic and predictable. Such systems were limited by the complexity of natural language, as it is highly difficult and inefficient to generate rules to handle every possible query. A number of adaptations have been made since these early frameworks, which are outlined below.
 
 %The development of \acrfull{ai} and \acrfull{nlp} meant that chatbots began to learn from data and
@@ -96,7 +118,7 @@ A common problem with training neural networks is the vanishing/exploding gradie
 \begin{figure}[h]
     \centering
     \includegraphics[height=7.5cm,trim={0 0 0 0cm},clip]{Paper/images/lstm.png}
-    \caption{Architecture of an \acrlong{lstm} cell \citep{olah2015understanding}}
+    \caption{Architecture of a \acrlong{lstm} cell \citep{olah2015understanding}}
     \label{fig:lstm_architecture}
 \end{figure}
 
@@ -125,33 +147,28 @@ All of the above models (\acrshort{rnn}s, \acrshort{lstm}s, and \acrshort{gru}s 
 
 \section{Transformers}
 \label{sec:background_transformers}
-Attention is all you need
+Transformers were introduced in \citeauthor{vaswani2017attention}'s 'Attention Is All You Need' paper. The authors proposed a sequence-to-sequence model which uses $N=6$ stacked encoders and decoders (although subsequent models use varying numbers of encoders and/or decoders). The strength of Transformers lies in their ability to process all words a sentence simultaneously (the sequential nature of \acrshort{lstm} networks made them slow to train), and their ability to retain context from much further back in the sequence \cite{vaswani2017attention}.
+
+While there are many variations, the initial model architecture is shown in Figure \ref{fig:transformer_architecture}. It begins by taking initial embeddings (learned embeddings such as word2Vec - Google's \acrshort{bert} uses wordpiece tokenisation in order to easily handle out-of-vocabulary words \citep{wu2016googles}), and applies a vector containing positional encodings for each word (using $sin$ and $cos$ functions). These positional encodings are then passed into the encoder block.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[height=10cm,trim={0 0 0cm 0cm},clip]{Paper/images/transformer.png}
+    \caption{Architecture of a Transformer model \citep{vaswani2017attention}}
+    \label{fig:transformer_architecture}
+\end{figure}
+
+\subsection{Encoder}
+An encoder consists of a multi-headed attention block combined with a feed-forward neural network, both of which are followed by layer normalisation. Firstly, the positional encoding vectors are used to calculate self-attention vectors, which specifies how each word relates to every other word in the sequence. Each of the self-attention vectors can be passed into the neural network independently of each other, meaning that the model can take advantage of the parallelisation offered by \acrshort{gpu}s, reducing training time. Finally, the encoder outputs a contextualised vector, which can be intuitively conceptualised as containing the `meaning' of the word within its context.
+
+\subsection{Decoder}
+The decoder uses a similar architecture to the encoder, but uses masking to prevent the model from `seeing ahead' in the sentence. For example, to translate the phrase ``Esta es una tesis fantástica'' from Spanish to English, the model should not see any word ``tesis fantástica'' when calculating the self-attention for the phrase ``Esta es una''. This means that the model has unidirectional-context (typically only left-context). Once the masked multi-headed attention vectors have been calculated, the decoder combines this with the output from the encoder using another multi-headed attention block. Finally this information is passed into a feed-forward neural network to produce the prediction for the next word in the sequence until an end of sentence token (<EOS>) is produced.
+
+
 % Taken from online:
 % Non sequential: sentences are processed as a whole rather than word by word.
 % Self Attention: this is the newly introduced 'unit' used to compute similarity scores between words in a sentence.
 % Positional embeddings: another innovation introduced to replace recurrence. The idea is to use fixed or learned weights which encode information related to a specific position of a token in a sentence
-
-\subsection{Embeddings}
-For neural networks to be able to process text, a numerical representation is required. The improvement of these numeric representations has been a key advancement in the area of \acrfull{nlp}, particularly in recent years. Initial models used integer IDs in order to represent words by deriving an integer value from the frequency of a word occuring. This is known as a bag-of-words approach, and is based upon the work of \citet{Zellig}. While there have been variations upon this by using `n-grams' (collections of \textit{n} successive words, this approach is limited in its ability to capture the semantic information within a language \citep{Monisha}. In addition, this method encounters difficulty when the corpus is large and the model dictionary is very large as the model dimensionality is linearly dependent on the number of unique words.
-
-An alternative approach known as Word2Vec was developed by \citet{mikolov2013efficient} aimed to overcome both of these limitations by building on the work of \citet{bengio2000neural}. It is a technique which uses two-layer neural networks in order to produce learned word embeddings, so that words that have similar usage/context in the training corpus are close (have a similar cosine similarity/smallest cosine distance) in the embedding vector space. Therefore, these vectors are superior to integer IDs in containing semantic detail. We can observe this by considering a common example using the vector representations of the words king, man, and woman ($w_K$, $w_M$, and $w_W$ respectively), it can be shown that:
-\begin{equation*}
-    \begin{aligned}
-        w_K - w_M + w_W &\approx w_Q \\
-        King - Man + Woman &\approx Queen
-    \end{aligned}
-\end{equation*}
-Where $w_Q$ denotes the vector representation for 'Queen', which is the word with the smallest cosine distance to the above calculation \citep{allen2019analogies}.
-
-\cite{mikolov2013efficient} proposed two possible approaches: one is to use the surrounding words to predict the `current' one (\acrfull{cbow}) and the other is where the `current' word is used to predict the surrounding ones (Skip Gram). A key feature of this approach is that each vector describes the context of the word by considering neighboring tokens, rather than the word itself \citep{li2018introduction}. However, this approach cannot handle words that are not in the training corpus. Additionally, words of opposite sentiment such as “good” and “bad” are closely located in the vector space \citep{sivakumar2020review}, due to the limitations of using a \acrshort{cbow} or Skip Gram approach.
-
-% NOT FOR WORD2VEC: A key benefit of this approach is that vectorised word embeddings have the potential to detect and classify words that are previously unseen to the model \citep{Rudkowsky}.
-
-Word2Vec and other similar embeddings such as Glove \citep{Pennington} have long been the industry standard. However, a key limitation is the inability to provide contextualisation. For example, such models provide one vector per word and, as such, they are unable to distinguish between a `fun fair' and a `process being fair', for example. Therefore it is essential to generate contextualised embeddings to represent words. %(this uses its placement within a sentence using the sin/cos functions? What about the sentence placement - which sentence it is?) Therefore we can have similar representations of fair/unbiased and fair/carnival.
-
-\acrfull{bert} was developed in order by \citet{devlin2019bert} to overcome this limitation, taking into account both left and right context (i.e. words before and after the current word). Previous models such as \acrshort{elmo} used \acrshort{cnn} and \acrshort{lstm} architecture \citep{peters2018deep}, but \acrshort{bert} dispensed with this technology, using a series of stacked encoders and is trained using masked-language modeling and next sentence prediction. %Use BERT's pre-training (Self-supervison) to generate contextual encodings for words? And then use fine-tuning/feature-based approach for use with another model.
-
-
 
 % ----------------------------------------------------------------------------------------------------------------------
 History of improvements: 
@@ -159,7 +176,13 @@ ELMo - A character-level CNN combined with 2 bi-directional RNNs. However, becau
 Transformer Neural Networks - encoders and decoders
 OpenAI's GPT uses stacked decoders
 BERT uses stacked encoders - masked language model and next sentence prediction.
-BART uses both
+BART uses both - BART is a seq2seq model (a denoising autoencoder). One of the best models for extractive question answering in \citet{pearce2021comparative}
+
+Autoencoding models: BERT
+Autoregressive models: GPT
+seq2seq models: BART
+
+"GPT-3 is an autoregressive model, while BERT is bidirectional. While GPT-3 only considers the left context when making predictions, BERT takes into account both left and right context."
 
 RNNs have historically been the industry standard, due to the sequential structure of language, but they are slow to train (due to sequential processing of each token) \citep{vaswani2017attention}, especially when there are long strings to process, and can have convergence issues due to vanishing/exploding gradients \citep{Lipton}.
 
