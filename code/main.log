@@ -1,1 +1,46 @@
 WARNING:root:No GPU - available, using a CPU
+WARNING:root:No GPU - available, using a CPU
+DEBUG:urllib3.connectionpool:Starting new HTTPS connection (1): huggingface.co:443
+DEBUG:urllib3.connectionpool:https://huggingface.co:443 "HEAD /deepset/bert-base-cased-squad2/resolve/main/vocab.txt HTTP/1.1" 200 0
+DEBUG:urllib3.connectionpool:Starting new HTTPS connection (1): openaipublic.blob.core.windows.net:443
+DEBUG:urllib3.connectionpool:https://openaipublic.blob.core.windows.net:443 "GET /encodings/cl100k_base.tiktoken HTTP/1.1" 200 1681126
+DEBUG:urllib3.connectionpool:https://huggingface.co:443 "HEAD /vblagoje/bart_lfqa/resolve/main/vocab.json HTTP/1.1" 200 0
+DEBUG:openai:message='Request to OpenAI API' method=post path=https://api.openai.com/v1/embeddings
+DEBUG:openai:api_version=None data='{"input": "When did Universities begin teaching Computer Vision?", "model": "text-embedding-ada-002", "encoding_format": "base64"}' message='Post details'
+DEBUG:urllib3.util.retry:Converted retries value: 2 -> Retry(total=2, connect=None, read=None, redirect=None, status=None)
+DEBUG:urllib3.connectionpool:Starting new HTTPS connection (1): api.openai.com:443
+DEBUG:urllib3.connectionpool:https://api.openai.com:443 "POST /v1/embeddings HTTP/1.1" 429 206
+DEBUG:openai:message='OpenAI API response' path=https://api.openai.com/v1/embeddings processing_ms=None request_id=cb673cbd57188c61aa3817fb76179cf3 response_code=429
+INFO:openai:error_code=None error_message='You exceeded your current quota, please check your plan and billing details.' error_param=None error_type=insufficient_quota message='OpenAI API error received' stream_error=False
+INFO:sentence_transformers.SentenceTransformer:Load pretrained SentenceTransformer: bert-base-nli-mean-tokens
+INFO:sentence_transformers.SentenceTransformer:Use pytorch device: cpu
+DEBUG:urllib3.connectionpool:Resetting dropped connection: huggingface.co
+DEBUG:urllib3.connectionpool:https://huggingface.co:443 "HEAD /deepset/bert-base-cased-squad2/resolve/main/config.json HTTP/1.1" 200 0
+DEBUG:openai:message='Request to OpenAI API' method=post path=https://api.openai.com/v1/embeddings
+DEBUG:openai:api_version=None data='{"input": "When did Universities begin teaching Computer Vision?", "model": "text-embedding-ada-002", "encoding_format": "base64"}' message='Post details'
+DEBUG:urllib3.connectionpool:Resetting dropped connection: api.openai.com
+DEBUG:urllib3.connectionpool:https://api.openai.com:443 "POST /v1/embeddings HTTP/1.1" 429 206
+DEBUG:openai:message='OpenAI API response' path=https://api.openai.com/v1/embeddings processing_ms=None request_id=f29b954415acf6163d89da2436b8f819 response_code=429
+INFO:openai:error_code=None error_message='You exceeded your current quota, please check your plan and billing details.' error_param=None error_type=insufficient_quota message='OpenAI API error received' stream_error=False
+INFO:sentence_transformers.SentenceTransformer:Load pretrained SentenceTransformer: bert-base-nli-mean-tokens
+INFO:sentence_transformers.SentenceTransformer:Use pytorch device: cpu
+DEBUG:openai:message='Request to OpenAI API' method=post path=https://api.openai.com/v1/embeddings
+DEBUG:openai:api_version=None data='{"input": "When did Universities begin teaching Computer Vision?", "model": "text-embedding-ada-002", "encoding_format": "base64"}' message='Post details'
+DEBUG:urllib3.connectionpool:Resetting dropped connection: api.openai.com
+DEBUG:urllib3.connectionpool:https://api.openai.com:443 "POST /v1/embeddings HTTP/1.1" 429 206
+DEBUG:openai:message='OpenAI API response' path=https://api.openai.com/v1/embeddings processing_ms=None request_id=865332dd7706c5304f797c1f00fccb2f response_code=429
+INFO:openai:error_code=None error_message='You exceeded your current quota, please check your plan and billing details.' error_param=None error_type=insufficient_quota message='OpenAI API error received' stream_error=False
+DEBUG:openai:message='Request to OpenAI API' method=post path=https://api.openai.com/v1/embeddings
+DEBUG:openai:api_version=None data='{"input": "When did Universities begin teaching Computer Vision?", "model": "text-embedding-ada-002", "encoding_format": "base64"}' message='Post details'
+DEBUG:urllib3.connectionpool:https://api.openai.com:443 "POST /v1/embeddings HTTP/1.1" 429 206
+DEBUG:openai:message='OpenAI API response' path=https://api.openai.com/v1/embeddings processing_ms=None request_id=476ab7cbd4c0c39f0bc9f9c3c07f0dc5 response_code=429
+INFO:openai:error_code=None error_message='You exceeded your current quota, please check your plan and billing details.' error_param=None error_type=insufficient_quota message='OpenAI API error received' stream_error=False
+INFO:sentence_transformers.SentenceTransformer:Load pretrained SentenceTransformer: embedding_model
+DEBUG:urllib3.connectionpool:Resetting dropped connection: huggingface.co
+DEBUG:urllib3.connectionpool:https://huggingface.co:443 "GET /api/models/sentence-transformers/embedding_model HTTP/1.1" 401 41
+INFO:sentence_transformers.SentenceTransformer:Load pretrained SentenceTransformer: embedding_model
+DEBUG:urllib3.connectionpool:https://huggingface.co:443 "GET /api/models/sentence-transformers/embedding_model HTTP/1.1" 401 41
+INFO:sentence_transformers.SentenceTransformer:Load pretrained SentenceTransformer: bert-base-nli-mean-tokens
+INFO:sentence_transformers.SentenceTransformer:Use pytorch device: cpu
+INFO:sentence_transformers.SentenceTransformer:Load pretrained SentenceTransformer: bert-base-nli-mean-tokens
+INFO:sentence_transformers.SentenceTransformer:Use pytorch device: cpu
