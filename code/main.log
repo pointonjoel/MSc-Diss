@@ -44,3 +44,7 @@ INFO:sentence_transformers.SentenceTransformer:Load pretrained SentenceTransform
 INFO:sentence_transformers.SentenceTransformer:Use pytorch device: cpu
 INFO:sentence_transformers.SentenceTransformer:Load pretrained SentenceTransformer: bert-base-nli-mean-tokens
 INFO:sentence_transformers.SentenceTransformer:Use pytorch device: cpu
+WARNING:root:No GPU - available, using a CPU
+DEBUG:urllib3.connectionpool:Starting new HTTPS connection (1): huggingface.co:443
+DEBUG:urllib3.connectionpool:https://huggingface.co:443 "HEAD /deepset/bert-base-cased-squad2/resolve/main/vocab.txt HTTP/1.1" 200 0
+DEBUG:urllib3.connectionpool:https://huggingface.co:443 "HEAD /vblagoje/bart_lfqa/resolve/main/vocab.json HTTP/1.1" 200 0
