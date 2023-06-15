@@ -641,3 +641,121 @@ INFO:gensim.models.word2vec:worker thread finished; awaiting finish of 0 more th
 INFO:gensim.models.word2vec:EPOCH - 5 : training on 285 raw words (196 effective words) took 0.0s, 78497 effective words/s
 INFO:gensim.utils:Word2Vec lifecycle event {'msg': 'training on 1425 raw words (983 effective words) took 0.0s, 21680 effective words/s', 'datetime': '2023-06-14T17:38:54.699070', 'gensim': '4.1.2', 'python': '3.9.16 (main, Mar  8 2023, 10:39:24) [MSC v.1916 64 bit (AMD64)]', 'platform': 'Windows-10-10.0.22621-SP0', 'event': 'train'}
 INFO:gensim.utils:Word2Vec lifecycle event {'params': 'Word2Vec(vocab=229, vector_size=100, alpha=0.025)', 'datetime': '2023-06-14T17:38:54.699070', 'gensim': '4.1.2', 'python': '3.9.16 (main, Mar  8 2023, 10:39:24) [MSC v.1916 64 bit (AMD64)]', 'platform': 'Windows-10-10.0.22621-SP0', 'event': 'created'}
+INFO:gensim.models.word2vec:collecting all words and their counts
+INFO:gensim.models.word2vec:PROGRESS: at sentence #0, processed 0 words, keeping 0 word types
+INFO:gensim.models.word2vec:collected 213 word types from a corpus of 285 raw words and 20 sentences
+INFO:gensim.models.word2vec:Creating a fresh vocabulary
+DEBUG:gensim.utils:starting a new internal lifecycle event log for Word2Vec
+INFO:gensim.utils:Word2Vec lifecycle event {'msg': 'effective_min_count=1 retains 213 unique words (100.0%% of original 213, drops 0)', 'datetime': '2023-06-14T18:17:21.441751', 'gensim': '4.1.2', 'python': '3.9.16 (main, Mar  8 2023, 10:39:24) [MSC v.1916 64 bit (AMD64)]', 'platform': 'Windows-10-10.0.22621-SP0', 'event': 'prepare_vocab'}
+INFO:gensim.utils:Word2Vec lifecycle event {'msg': 'effective_min_count=1 leaves 285 word corpus (100.0%% of original 285, drops 0)', 'datetime': '2023-06-14T18:17:21.441751', 'gensim': '4.1.2', 'python': '3.9.16 (main, Mar  8 2023, 10:39:24) [MSC v.1916 64 bit (AMD64)]', 'platform': 'Windows-10-10.0.22621-SP0', 'event': 'prepare_vocab'}
+INFO:gensim.models.word2vec:deleting the raw counts dictionary of 213 items
+INFO:gensim.models.word2vec:sample=0.001 downsamples 213 most-common words
+INFO:gensim.utils:Word2Vec lifecycle event {'msg': 'downsampling leaves estimated 187.45136287811238 word corpus (65.8%% of prior 285)', 'datetime': '2023-06-14T18:17:21.457372', 'gensim': '4.1.2', 'python': '3.9.16 (main, Mar  8 2023, 10:39:24) [MSC v.1916 64 bit (AMD64)]', 'platform': 'Windows-10-10.0.22621-SP0', 'event': 'prepare_vocab'}
+INFO:gensim.models.word2vec:estimated required memory for 213 words and 100 dimensions: 276900 bytes
+INFO:gensim.models.word2vec:resetting layer weights
+INFO:gensim.utils:Word2Vec lifecycle event {'update': False, 'trim_rule': 'None', 'datetime': '2023-06-14T18:17:21.472994', 'gensim': '4.1.2', 'python': '3.9.16 (main, Mar  8 2023, 10:39:24) [MSC v.1916 64 bit (AMD64)]', 'platform': 'Windows-10-10.0.22621-SP0', 'event': 'build_vocab'}
+INFO:gensim.utils:Word2Vec lifecycle event {'msg': 'training model with 3 workers on 213 vocabulary and 100 features, using sg=1 hs=0 sample=0.001 negative=5 window=5 shrink_windows=True', 'datetime': '2023-06-14T18:17:21.482504', 'gensim': '4.1.2', 'python': '3.9.16 (main, Mar  8 2023, 10:39:24) [MSC v.1916 64 bit (AMD64)]', 'platform': 'Windows-10-10.0.22621-SP0', 'event': 'train'}
+DEBUG:gensim.models.word2vec:job loop exiting, total 1 jobs
+DEBUG:gensim.models.word2vec:worker exiting, processed 0 jobs
+DEBUG:gensim.models.word2vec:worker exiting, processed 0 jobs
+INFO:gensim.models.word2vec:worker thread finished; awaiting finish of 2 more threads
+INFO:gensim.models.word2vec:worker thread finished; awaiting finish of 1 more threads
+DEBUG:gensim.models.word2vec:worker exiting, processed 1 jobs
+INFO:gensim.models.word2vec:worker thread finished; awaiting finish of 0 more threads
+INFO:gensim.models.word2vec:EPOCH - 1 : training on 285 raw words (193 effective words) took 0.0s, 13538 effective words/s
+DEBUG:gensim.models.word2vec:job loop exiting, total 1 jobs
+DEBUG:gensim.models.word2vec:worker exiting, processed 0 jobs
+INFO:gensim.models.word2vec:worker thread finished; awaiting finish of 2 more threads
+DEBUG:gensim.models.word2vec:worker exiting, processed 0 jobs
+INFO:gensim.models.word2vec:worker thread finished; awaiting finish of 1 more threads
+DEBUG:gensim.models.word2vec:worker exiting, processed 1 jobs
+INFO:gensim.models.word2vec:worker thread finished; awaiting finish of 0 more threads
+INFO:gensim.models.word2vec:EPOCH - 2 : training on 285 raw words (184 effective words) took 0.0s, 82745 effective words/s
+DEBUG:gensim.models.word2vec:job loop exiting, total 1 jobs
+DEBUG:gensim.models.word2vec:worker exiting, processed 0 jobs
+INFO:gensim.models.word2vec:worker thread finished; awaiting finish of 2 more threads
+DEBUG:gensim.models.word2vec:worker exiting, processed 1 jobs
+INFO:gensim.models.word2vec:worker thread finished; awaiting finish of 1 more threads
+DEBUG:gensim.models.word2vec:worker exiting, processed 0 jobs
+INFO:gensim.models.word2vec:worker thread finished; awaiting finish of 0 more threads
+INFO:gensim.models.word2vec:EPOCH - 3 : training on 285 raw words (194 effective words) took 0.1s, 2998 effective words/s
+DEBUG:gensim.models.word2vec:job loop exiting, total 1 jobs
+DEBUG:gensim.models.word2vec:worker exiting, processed 0 jobs
+DEBUG:gensim.models.word2vec:worker exiting, processed 0 jobs
+INFO:gensim.models.word2vec:worker thread finished; awaiting finish of 2 more threads
+INFO:gensim.models.word2vec:worker thread finished; awaiting finish of 1 more threads
+DEBUG:gensim.models.word2vec:worker exiting, processed 1 jobs
+INFO:gensim.models.word2vec:worker thread finished; awaiting finish of 0 more threads
+INFO:gensim.models.word2vec:EPOCH - 4 : training on 285 raw words (182 effective words) took 0.0s, 20303 effective words/s
+DEBUG:gensim.models.word2vec:job loop exiting, total 1 jobs
+DEBUG:gensim.models.word2vec:worker exiting, processed 0 jobs
+DEBUG:gensim.models.word2vec:worker exiting, processed 0 jobs
+INFO:gensim.models.word2vec:worker thread finished; awaiting finish of 2 more threads
+INFO:gensim.models.word2vec:worker thread finished; awaiting finish of 1 more threads
+DEBUG:gensim.models.word2vec:worker exiting, processed 1 jobs
+INFO:gensim.models.word2vec:worker thread finished; awaiting finish of 0 more threads
+INFO:gensim.models.word2vec:EPOCH - 5 : training on 285 raw words (185 effective words) took 0.0s, 71611 effective words/s
+INFO:gensim.utils:Word2Vec lifecycle event {'msg': 'training on 1425 raw words (938 effective words) took 0.9s, 1038 effective words/s', 'datetime': '2023-06-14T18:17:22.389069', 'gensim': '4.1.2', 'python': '3.9.16 (main, Mar  8 2023, 10:39:24) [MSC v.1916 64 bit (AMD64)]', 'platform': 'Windows-10-10.0.22621-SP0', 'event': 'train'}
+INFO:gensim.utils:Word2Vec lifecycle event {'params': 'Word2Vec(vocab=213, vector_size=100, alpha=0.025)', 'datetime': '2023-06-14T18:17:22.389069', 'gensim': '4.1.2', 'python': '3.9.16 (main, Mar  8 2023, 10:39:24) [MSC v.1916 64 bit (AMD64)]', 'platform': 'Windows-10-10.0.22621-SP0', 'event': 'created'}
+INFO:gensim.models.word2vec:collecting all words and their counts
+INFO:gensim.models.word2vec:PROGRESS: at sentence #0, processed 0 words, keeping 0 word types
+INFO:gensim.models.word2vec:collected 213 word types from a corpus of 285 raw words and 20 sentences
+INFO:gensim.models.word2vec:Creating a fresh vocabulary
+DEBUG:gensim.utils:starting a new internal lifecycle event log for Word2Vec
+INFO:gensim.utils:Word2Vec lifecycle event {'msg': 'effective_min_count=1 retains 213 unique words (100.0%% of original 213, drops 0)', 'datetime': '2023-06-14T18:17:22.401131', 'gensim': '4.1.2', 'python': '3.9.16 (main, Mar  8 2023, 10:39:24) [MSC v.1916 64 bit (AMD64)]', 'platform': 'Windows-10-10.0.22621-SP0', 'event': 'prepare_vocab'}
+INFO:gensim.utils:Word2Vec lifecycle event {'msg': 'effective_min_count=1 leaves 285 word corpus (100.0%% of original 285, drops 0)', 'datetime': '2023-06-14T18:17:22.401131', 'gensim': '4.1.2', 'python': '3.9.16 (main, Mar  8 2023, 10:39:24) [MSC v.1916 64 bit (AMD64)]', 'platform': 'Windows-10-10.0.22621-SP0', 'event': 'prepare_vocab'}
+INFO:gensim.models.word2vec:deleting the raw counts dictionary of 213 items
+INFO:gensim.models.word2vec:sample=0.001 downsamples 213 most-common words
+INFO:gensim.utils:Word2Vec lifecycle event {'msg': 'downsampling leaves estimated 187.45136287811238 word corpus (65.8%% of prior 285)', 'datetime': '2023-06-14T18:17:22.404310', 'gensim': '4.1.2', 'python': '3.9.16 (main, Mar  8 2023, 10:39:24) [MSC v.1916 64 bit (AMD64)]', 'platform': 'Windows-10-10.0.22621-SP0', 'event': 'prepare_vocab'}
+INFO:gensim.models.word2vec:estimated required memory for 213 words and 100 dimensions: 276900 bytes
+INFO:gensim.models.word2vec:resetting layer weights
+INFO:gensim.utils:Word2Vec lifecycle event {'update': False, 'trim_rule': 'None', 'datetime': '2023-06-14T18:17:22.410793', 'gensim': '4.1.2', 'python': '3.9.16 (main, Mar  8 2023, 10:39:24) [MSC v.1916 64 bit (AMD64)]', 'platform': 'Windows-10-10.0.22621-SP0', 'event': 'build_vocab'}
+INFO:gensim.utils:Word2Vec lifecycle event {'msg': 'training model with 3 workers on 213 vocabulary and 100 features, using sg=0 hs=0 sample=0.001 negative=5 window=5 shrink_windows=True', 'datetime': '2023-06-14T18:17:22.410793', 'gensim': '4.1.2', 'python': '3.9.16 (main, Mar  8 2023, 10:39:24) [MSC v.1916 64 bit (AMD64)]', 'platform': 'Windows-10-10.0.22621-SP0', 'event': 'train'}
+DEBUG:gensim.models.word2vec:job loop exiting, total 1 jobs
+DEBUG:gensim.models.word2vec:worker exiting, processed 0 jobs
+DEBUG:gensim.models.word2vec:worker exiting, processed 0 jobs
+INFO:gensim.models.word2vec:worker thread finished; awaiting finish of 2 more threads
+INFO:gensim.models.word2vec:worker thread finished; awaiting finish of 1 more threads
+DEBUG:gensim.models.word2vec:worker exiting, processed 1 jobs
+INFO:gensim.models.word2vec:worker thread finished; awaiting finish of 0 more threads
+INFO:gensim.models.word2vec:EPOCH - 1 : training on 285 raw words (193 effective words) took 0.0s, 41176 effective words/s
+DEBUG:gensim.models.word2vec:job loop exiting, total 1 jobs
+DEBUG:gensim.models.word2vec:worker exiting, processed 0 jobs
+INFO:gensim.models.word2vec:worker thread finished; awaiting finish of 2 more threads
+DEBUG:gensim.models.word2vec:worker exiting, processed 1 jobs
+INFO:gensim.models.word2vec:worker thread finished; awaiting finish of 1 more threads
+DEBUG:gensim.models.word2vec:worker exiting, processed 0 jobs
+INFO:gensim.models.word2vec:worker thread finished; awaiting finish of 0 more threads
+INFO:gensim.models.word2vec:EPOCH - 2 : training on 285 raw words (184 effective words) took 0.0s, 54132 effective words/s
+DEBUG:gensim.models.word2vec:job loop exiting, total 1 jobs
+DEBUG:gensim.models.word2vec:worker exiting, processed 1 jobs
+DEBUG:gensim.models.word2vec:worker exiting, processed 0 jobs
+DEBUG:gensim.models.word2vec:worker exiting, processed 0 jobs
+INFO:gensim.models.word2vec:worker thread finished; awaiting finish of 2 more threads
+INFO:gensim.models.word2vec:worker thread finished; awaiting finish of 1 more threads
+INFO:gensim.models.word2vec:worker thread finished; awaiting finish of 0 more threads
+INFO:gensim.models.word2vec:EPOCH - 3 : training on 285 raw words (194 effective words) took 0.0s, 80538 effective words/s
+DEBUG:gensim.models.word2vec:job loop exiting, total 1 jobs
+DEBUG:gensim.models.word2vec:worker exiting, processed 0 jobs
+DEBUG:gensim.models.word2vec:worker exiting, processed 0 jobs
+INFO:gensim.models.word2vec:worker thread finished; awaiting finish of 2 more threads
+DEBUG:gensim.models.word2vec:worker exiting, processed 1 jobs
+INFO:gensim.models.word2vec:worker thread finished; awaiting finish of 1 more threads
+INFO:gensim.models.word2vec:worker thread finished; awaiting finish of 0 more threads
+INFO:gensim.models.word2vec:EPOCH - 4 : training on 285 raw words (182 effective words) took 0.0s, 90367 effective words/s
+DEBUG:gensim.models.word2vec:job loop exiting, total 1 jobs
+DEBUG:gensim.models.word2vec:worker exiting, processed 1 jobs
+DEBUG:gensim.models.word2vec:worker exiting, processed 0 jobs
+INFO:gensim.models.word2vec:worker thread finished; awaiting finish of 2 more threads
+INFO:gensim.models.word2vec:worker thread finished; awaiting finish of 1 more threads
+DEBUG:gensim.models.word2vec:worker exiting, processed 0 jobs
+INFO:gensim.models.word2vec:worker thread finished; awaiting finish of 0 more threads
+INFO:gensim.models.word2vec:EPOCH - 5 : training on 285 raw words (185 effective words) took 0.0s, 74814 effective words/s
+INFO:gensim.utils:Word2Vec lifecycle event {'msg': 'training on 1425 raw words (938 effective words) took 0.1s, 10668 effective words/s', 'datetime': '2023-06-14T18:17:22.499195', 'gensim': '4.1.2', 'python': '3.9.16 (main, Mar  8 2023, 10:39:24) [MSC v.1916 64 bit (AMD64)]', 'platform': 'Windows-10-10.0.22621-SP0', 'event': 'train'}
+INFO:gensim.utils:Word2Vec lifecycle event {'params': 'Word2Vec(vocab=213, vector_size=100, alpha=0.025)', 'datetime': '2023-06-14T18:17:22.499195', 'gensim': '4.1.2', 'python': '3.9.16 (main, Mar  8 2023, 10:39:24) [MSC v.1916 64 bit (AMD64)]', 'platform': 'Windows-10-10.0.22621-SP0', 'event': 'created'}
+DEBUG:urllib3.connectionpool:Resetting dropped connection: huggingface.co
+DEBUG:urllib3.connectionpool:https://huggingface.co:443 "HEAD /gpt2/resolve/main/tokenizer_config.json HTTP/1.1" 404 0
+DEBUG:urllib3.connectionpool:https://huggingface.co:443 "HEAD /gpt2/resolve/main/config.json HTTP/1.1" 200 0
+DEBUG:urllib3.connectionpool:https://huggingface.co:443 "HEAD /gpt2/resolve/main/tokenizer_config.json HTTP/1.1" 404 0
+DEBUG:urllib3.connectionpool:https://huggingface.co:443 "HEAD /gpt2/resolve/main/vocab.json HTTP/1.1" 200 0
+DEBUG:urllib3.connectionpool:https://huggingface.co:443 "HEAD /gpt2/resolve/main/config.json HTTP/1.1" 200 0
