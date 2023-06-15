@@ -1,5 +1,5 @@
-from modules.chatbot import *
-from modules.embedding_functions import *
+from chatbot import *
+from embedding_functions import *
 
 
 class Query:

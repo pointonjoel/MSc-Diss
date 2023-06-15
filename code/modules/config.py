@@ -16,6 +16,9 @@ import re  # for cutting <ref> links out of Wikipedia articles
 import mwparserfromhell  # for splitting Wikipedia articles into sections
 from copy import deepcopy # for copying dataframes
 import torch # for BERT's argmax and tensors
+import fitz # For parsing PDFs
+from unidecode import unidecode # For decoding PDF text
+import re # for cleaning text
 from transformers import BertForQuestionAnswering, BertTokenizer # For BERT's tokeniser and model
 from transformers import BartTokenizer, BartForConditionalGeneration # For BART's tokeniser and model
 import torch # For creating neural networks with GPUs

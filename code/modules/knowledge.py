@@ -1,5 +1,5 @@
 # from config import *
-from modules.embedding_functions import *
+from embedding_functions import *
 
 
 class Knowledge:
@@ -23,7 +23,7 @@ class Knowledge:
 
     @staticmethod
     def get_blank_knowledge_df() -> pd.DataFrame:
-        return pd.DataFrame(columns=['Source', 'Heading', 'Subheading', 'Content'])
+        return pd.DataFrame(columns=['Source', 'Heading', 'Subheading', 'Page', 'Content'])
 
     def extract_wiki_sections(self,
                               page_name: str,
@@ -132,7 +132,7 @@ class Knowledge:
 
     def split_long_sections(self, df: pd.DataFrame, delimiter: str = '\n'):
         """
-        Splits long sections of text into smaller ones
+        Splits long sections of text into smaller ones, using each delimiter
         """
 
         new_dict_of_shorter_sections = self.get_blank_knowledge_df().to_dict('records')
@@ -231,6 +231,62 @@ class Knowledge:
 
         except wikipedia.exceptions.PageError:  # The wiki page doesn't exist
             log_and_print_message(f'The wiki page {page_name} can\'t be found. Please check and try again.')
+
+    def sentence_end(self, text: str, separators: list = ['.', '!', '?']) -> bool:
+        for sep in separators:
+            if text.endswith(sep):
+                return True
+            else:
+                pass
+        # So if none of the separators are used to end the string, then the sentence has come to an unnatural end
+        return False
+
+    def extract_pdf_text(self,
+                         filename_path: str,
+                         document_name: str,
+                         page_limit: int = None) -> pd.DataFrame:
+        # Open document
+        doc = fitz.open(filename_path)
+        content = self.get_blank_knowledge_df()
+
+        # Iterate through the content
+        for page in doc:
+            page_limit = doc.page_count if not page_limit else page_limit
+            if page.number <= page_limit:
+                block_content = page.get_text("blocks")
+                for block in block_content:
+                    if block[6] == 0:  # I.e. only extract text
+                        plain_text = unidecode(block[4])
+                        new_row = {'Source': document_name, 'Page': page.number, 'Content': plain_text}
+                        content = pd.concat([content, pd.DataFrame.from_records([new_row])])
+            else:
+                pass
+
+        # Remove any unwanted content - specifically websites
+        content['Content'] = content['Content'].apply(lambda x: re.sub(r'http\S+', '', x))
+        content['Content'] = content['Content'].apply(lambda x: re.sub(r'www.+', '', x))
+        content = content.loc[content['Content'] != '\n']
+        return content
+
+    def append_pdf(self, filename_path: str, document_name: str):
+        """
+        Takes a PDF document and appends the sections to the knowledge df
+        """
+        # Extract the text into blocks
+        content = self.extract_pdf_text(filename_path, document_name)
+
+        section_texts = content['Content']
+        page_numbers = content['Page']
+        merged_texts = []
+        merged_page_numbers = []
+
+        for i in range(len(section_texts)):
+            if num_tokens(section_texts[i]) < self.max_tokens:
+                pass
+
+        log_and_print_message(
+            f'The following PDF has been successfully added to the knowledge database: {document_name} ({filename_path})')
+
 
     def export_to_csv(self, filename):
         """

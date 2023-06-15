@@ -1,4 +1,4 @@
-from modules.config import *
+from config import *
 
 
 class ChatBot:
