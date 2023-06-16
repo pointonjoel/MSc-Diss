@@ -1,0 +1,47 @@
+WARNING:root:No GPU - available, using a CPU
+DEBUG:urllib3.connectionpool:Starting new HTTPS connection (1): huggingface.co:443
+DEBUG:urllib3.connectionpool:https://huggingface.co:443 "HEAD /deepset/bert-base-cased-squad2/resolve/main/vocab.txt HTTP/1.1" 200 0
+DEBUG:urllib3.connectionpool:https://huggingface.co:443 "HEAD /vblagoje/bart_lfqa/resolve/main/vocab.json HTTP/1.1" 200 0
+WARNING:root:No GPU - available, using a CPU
+DEBUG:urllib3.connectionpool:Starting new HTTPS connection (1): huggingface.co:443
+DEBUG:urllib3.connectionpool:https://huggingface.co:443 "HEAD /deepset/bert-base-cased-squad2/resolve/main/vocab.txt HTTP/1.1" 200 0
+DEBUG:urllib3.connectionpool:https://huggingface.co:443 "HEAD /vblagoje/bart_lfqa/resolve/main/vocab.json HTTP/1.1" 200 0
+WARNING:root:No GPU - available, using a CPU
+DEBUG:urllib3.connectionpool:Starting new HTTPS connection (1): huggingface.co:443
+DEBUG:urllib3.connectionpool:https://huggingface.co:443 "HEAD /deepset/bert-base-cased-squad2/resolve/main/vocab.txt HTTP/1.1" 200 0
+DEBUG:urllib3.connectionpool:https://huggingface.co:443 "HEAD /vblagoje/bart_lfqa/resolve/main/vocab.json HTTP/1.1" 200 0
+WARNING:root:No GPU - available, using a CPU
+DEBUG:urllib3.connectionpool:Starting new HTTPS connection (1): huggingface.co:443
+DEBUG:urllib3.connectionpool:https://huggingface.co:443 "HEAD /deepset/bert-base-cased-squad2/resolve/main/vocab.txt HTTP/1.1" 200 0
+DEBUG:urllib3.connectionpool:https://huggingface.co:443 "HEAD /vblagoje/bart_lfqa/resolve/main/vocab.json HTTP/1.1" 200 0
+WARNING:root:No GPU - available, using a CPU
+DEBUG:urllib3.connectionpool:Starting new HTTPS connection (1): huggingface.co:443
+DEBUG:urllib3.connectionpool:https://huggingface.co:443 "HEAD /deepset/bert-base-cased-squad2/resolve/main/vocab.txt HTTP/1.1" 200 0
+DEBUG:urllib3.connectionpool:https://huggingface.co:443 "HEAD /vblagoje/bart_lfqa/resolve/main/vocab.json HTTP/1.1" 200 0
+DEBUG:matplotlib:CACHEDIR=C:\Users\point\.matplotlib
+DEBUG:matplotlib.font_manager:Using fontManager instance from C:\Users\point\.matplotlib\fontlist-v330.json
+WARNING:root:No GPU - available, using a CPU
+DEBUG:urllib3.connectionpool:Starting new HTTPS connection (1): huggingface.co:443
+DEBUG:urllib3.connectionpool:https://huggingface.co:443 "HEAD /deepset/bert-base-cased-squad2/resolve/main/vocab.txt HTTP/1.1" 200 0
+DEBUG:urllib3.connectionpool:https://huggingface.co:443 "HEAD /vblagoje/bart_lfqa/resolve/main/vocab.json HTTP/1.1" 200 0
+WARNING:root:No GPU - available, using a CPU
+DEBUG:urllib3.connectionpool:Starting new HTTPS connection (1): huggingface.co:443
+DEBUG:urllib3.connectionpool:https://huggingface.co:443 "HEAD /deepset/bert-base-cased-squad2/resolve/main/vocab.txt HTTP/1.1" 200 0
+DEBUG:urllib3.connectionpool:https://huggingface.co:443 "HEAD /vblagoje/bart_lfqa/resolve/main/vocab.json HTTP/1.1" 200 0
+DEBUG:matplotlib:CACHEDIR=C:\Users\point\.matplotlib
+DEBUG:matplotlib.font_manager:Using fontManager instance from C:\Users\point\.matplotlib\fontlist-v330.json
+WARNING:root:No GPU - available, using a CPU
+DEBUG:urllib3.connectionpool:Starting new HTTPS connection (1): huggingface.co:443
+DEBUG:urllib3.connectionpool:https://huggingface.co:443 "HEAD /deepset/bert-base-cased-squad2/resolve/main/vocab.txt HTTP/1.1" 200 0
+DEBUG:urllib3.connectionpool:https://huggingface.co:443 "HEAD /vblagoje/bart_lfqa/resolve/main/vocab.json HTTP/1.1" 200 0
+WARNING:root:The following PDF has been successfully added to the knowledge database: CompVisionPDF (../assets/knowledge/Fundamentals_of_Digital_Image_Processing_Textbook.pdf)
+WARNING:root:No GPU - available, using a CPU
+DEBUG:urllib3.connectionpool:Starting new HTTPS connection (1): huggingface.co:443
+DEBUG:urllib3.connectionpool:https://huggingface.co:443 "HEAD /deepset/bert-base-cased-squad2/resolve/main/vocab.txt HTTP/1.1" 200 0
+DEBUG:urllib3.connectionpool:https://huggingface.co:443 "HEAD /vblagoje/bart_lfqa/resolve/main/vocab.json HTTP/1.1" 200 0
+WARNING:root:No GPU - available, using a CPU
+DEBUG:urllib3.connectionpool:Starting new HTTPS connection (1): huggingface.co:443
+DEBUG:urllib3.connectionpool:https://huggingface.co:443 "HEAD /deepset/bert-base-cased-squad2/resolve/main/vocab.txt HTTP/1.1" 200 0
+DEBUG:urllib3.connectionpool:https://huggingface.co:443 "HEAD /vblagoje/bart_lfqa/resolve/main/vocab.json HTTP/1.1" 200 0
+DEBUG:matplotlib:CACHEDIR=C:\Users\point\.matplotlib
+DEBUG:matplotlib.font_manager:Using fontManager instance from C:\Users\point\.matplotlib\fontlist-v330.json

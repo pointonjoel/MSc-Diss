@@ -1,4 +1,6 @@
 # from config import *
+import pandas as pd
+
 from embedding_functions import *
 
 
@@ -24,6 +26,35 @@ class Knowledge:
     @staticmethod
     def get_blank_knowledge_df() -> pd.DataFrame:
         return pd.DataFrame(columns=['Source', 'Heading', 'Subheading', 'Page', 'Content'])
+
+    # @staticmethod
+    def get_populated_knowledge_df(self,
+                                   source: list = (),
+                                   heading: list = (),
+                                   subheading: list = (),
+                                   page: list = (),
+                                   content: list = ()
+                                   ) -> pd.DataFrame:
+        knowledge = self.get_blank_knowledge_df()
+        if source:
+            knowledge['Source'] = source
+        if heading:
+            knowledge['Heading'] = heading
+        if subheading:
+            knowledge['Subheading'] = subheading
+        if page:
+            knowledge['Page'] = page
+        if content:
+            knowledge['Content'] = content
+
+        # knowledge = pd.DataFrame(
+        #     {'Source': source,
+        #      'Heading': heading,
+        #      'Subheading': subheading,
+        #      'Page': page,
+        #      'Content': content}
+        # )
+        return knowledge
 
     def extract_wiki_sections(self,
                               page_name: str,
@@ -97,7 +128,7 @@ class Knowledge:
                     merged_list.append(list_of_strings[i])
                 else:
                     merged_strings = list_of_strings[i] + delimiter + list_of_strings[i + 1]
-                    if num_tokens(merged_strings) < self.max_tokens:
+                    if num_tokens(merged_strings) <= self.max_tokens:
                         merged_list.append(merged_strings)
                         skip_item = True  # make it skip the element we just merged
                         potential_for_more_merging = True
@@ -125,7 +156,7 @@ class Knowledge:
                 remainder_of_string = encoding.decode(encoded_string[self.max_tokens:])
                 list_of_strings.append(truncated_string)
                 string = remainder_of_string
-                if num_tokens(remainder_of_string) < self.max_tokens:
+                if num_tokens(remainder_of_string) <= self.max_tokens:
                     needs_truncating = False
                     list_of_strings.append(remainder_of_string)
         return list_of_strings
@@ -232,7 +263,7 @@ class Knowledge:
         except wikipedia.exceptions.PageError:  # The wiki page doesn't exist
             log_and_print_message(f'The wiki page {page_name} can\'t be found. Please check and try again.')
 
-    def sentence_end(self, text: str, separators: list = ['.', '!', '?']) -> bool:
+    def sentence_end(self, text: str, separators: list = ('.', '!', '?')) -> bool:
         for sep in separators:
             if text.endswith(sep):
                 return True
@@ -275,18 +306,36 @@ class Knowledge:
         # Extract the text into blocks
         content = self.extract_pdf_text(filename_path, document_name)
 
-        section_texts = content['Content']
-        page_numbers = content['Page']
-        merged_texts = []
+        section_texts = content['Content'].tolist()
+        page_numbers = content['Page'].tolist()
+        merged_texts = ['']
         merged_page_numbers = []
+        # self.max_tokens = 50
 
         for i in range(len(section_texts)):
-            if num_tokens(section_texts[i]) < self.max_tokens:
-                pass
+            if num_tokens(section_texts[i]) <= self.max_tokens:
+                merged_text = merged_texts[-1] + section_texts[i]
+                if num_tokens(merged_text) <= self.max_tokens:  # i.e. we can merge the text without it being too long
+                    merged_texts[-1] = merged_text  # Update the latest line with the merged text
+                    if len(merged_page_numbers) == 0:  # i.e. the 1st piece of text
+                        merged_page_numbers.append([page_numbers[i]])
+                    elif page_numbers[i] not in merged_page_numbers[-1]:  # to find the combined page number
+                        merged_page_numbers[-1] = merged_page_numbers[-1] + [page_numbers[i]] #f'{merged_page_numbers[-1]}/{page_numbers[i]}'
+                    else:
+                        pass
+                else:  # we can't merge the current text with the previous ones
+                    merged_texts.append(section_texts[i])
+                    merged_page_numbers.append([page_numbers[i]])
+                    pass
+            else:  # very unlikely
+                pass  # NEED TO UPDATE THIS! Split the long bit up?
+        merged_page_numbers = [str(pages) if len(pages)==0 else '/'.join(str(page) for page in pages) for pages in merged_page_numbers]
+        content = self.get_populated_knowledge_df(content=merged_texts, page=merged_page_numbers)
+        content['Source'] = document_name
 
         log_and_print_message(
-            f'The following PDF has been successfully added to the knowledge database: {document_name} ({filename_path})')
-
+            f'The following PDF has been successfully added to the knowledge database: '
+            f'{document_name} ({filename_path})')
 
     def export_to_csv(self, filename):
         """
