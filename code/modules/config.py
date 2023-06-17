@@ -100,3 +100,10 @@ SECTIONS_TO_IGNORE = [
     "References and sources",
     "References and notes",
     ]
+
+
+class DocTypeNotFoundError(LookupError):
+    """
+    Raise this when there's an error with the doctype not being specified
+    """
+    pass

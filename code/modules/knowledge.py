@@ -95,15 +95,21 @@ class Knowledge:
         return knowledge
 
     @staticmethod
-    def generate_source_column(df: pd.DataFrame) -> pd.DataFrame:
+    def generate_source_column(df: pd.DataFrame, docType: str = 'Wiki') -> pd.DataFrame:
         """
         Creates a new column in the df which contains a summary of the source location
         """
 
         df.fillna('', inplace=True)
-        df['Section'] = df['Source'] + '->' + df['Heading'] + '->' + df['Subheading']
-        df['Section'] = df['Section'].str.replace('->->', '')
-        df['Section'] = df['Section'].str.rstrip('_->')
+
+        if docType == 'Wiki':
+            df['Section'] = df['Source'] + '->' + df['Heading'] + '->' + df['Subheading']
+            df['Section'] = df['Section'].str.replace('->->', '')
+            df['Section'] = df['Section'].str.rstrip('_->')
+        elif docType == 'PDF':
+            df['Section'] = df['Source'] + '->Page(s)' + df['Page']
+        else:
+            raise DocTypeNotFoundError('DocType not specified - could not produce the source column.')
         return df
 
     @staticmethod
@@ -205,6 +211,25 @@ class Knowledge:
                     new_dict_of_shorter_sections.append(item_to_append)
         return pd.DataFrame(new_dict_of_shorter_sections)
 
+    def format_and_get_embeddings(self, knowledge):
+        # Append '\n' to the start if it doesn't already have one
+        knowledge.loc[~knowledge['Content'].str.startswith('\n'), 'Content'] = '\n' + knowledge.loc[
+            ~knowledge['Content'].str.startswith('\n'), 'Content']
+
+        # Get embeddings
+        if self.model == 'GPT':
+            response = get_embedding(list(knowledge['Content']), embedding_model=self.embedding_model)
+            for i, be in enumerate(response["data"]):
+                assert i == be["index"]  # double check embeddings are in same order as input
+            batch_embeddings = [e["embedding"] for e in response["data"]]
+            knowledge['Embedding'] = batch_embeddings
+        else:
+            knowledge['Embedding'] = get_embedding(list(knowledge['Content']),
+                                                      embedding_model=self.embedding_model).tolist()
+
+        knowledge['Tokens'] = knowledge["Content"].apply(lambda x: num_tokens(x, token_model=self.token_model))
+        return knowledge
+
     def append_wikipedia_page(self, page_name: str,
                               sections_to_ignore: list = SECTIONS_TO_IGNORE):
         """
@@ -227,38 +252,29 @@ class Knowledge:
             knowledge = pd.concat([knowledge, section_content])
 
             # Generate succinct heading information
-            knowledge = self.generate_source_column(knowledge)
-            self.df = pd.concat([self.df, knowledge])
+            knowledge = self.generate_source_column(knowledge, docType='Wiki')
 
             # Remove unwanted strings and whitespace
-            self.df = self.clean_section_contents(self.df)
+            knowledge = self.clean_section_contents(knowledge)
 
             # Generate number of tokens in each section
-            self.df['Tokens'] = self.df["Content"].apply(lambda x: num_tokens(x, token_model=self.token_model))
+            knowledge['Tokens'] = knowledge["Content"].apply(lambda x: num_tokens(x, token_model=self.token_model))
 
             # Split long sections
             for delim in ["\n\n", "\n", ". ", '']:
-                self.df = self.split_long_sections(self.df, delimiter=delim)
+                knowledge = self.split_long_sections(knowledge, delimiter=delim)
 
             # Remove short sections
-            self.df = self.df.loc[self.df['Content'].str.len() > self.min_section_length]
+            knowledge = knowledge.loc[knowledge['Content'].str.len() > self.min_section_length]
 
-            # Append '\n' to the start if it doesn't already have one
-            self.df.loc[~self.df['Content'].str.startswith('\n'), 'Content'] = '\n' + self.df.loc[
-                ~self.df['Content'].str.startswith('\n'), 'Content']
+            # conduct final formatting and getting embeddings
+            knowledge = self.format_and_get_embeddings(knowledge)
 
-            # Get embeddings
-            if self.model == 'GPT':
-                response = get_embedding(list(self.df['Content']), embedding_model=self.embedding_model)
-                for i, be in enumerate(response["data"]):
-                    assert i == be["index"]  # double check embeddings are in same order as input
-                batch_embeddings = [e["embedding"] for e in response["data"]]
-                self.df['Embedding'] = batch_embeddings
-            else:
-                self.df['Embedding'] = get_embedding(list(self.df['Content']),
-                                                     embedding_model=self.embedding_model).tolist()
+            # Concat with main self.df
+            self.df = pd.concat([self.df, knowledge])
+
             log_and_print_message(
-                f'The following page has been successfully added to the knowledge database: {page_name}')
+                f'The following Wikipedia page has been successfully added to the knowledge database: {page_name}')
 
         except wikipedia.exceptions.PageError:  # The wiki page doesn't exist
             log_and_print_message(f'The wiki page {page_name} can\'t be found. Please check and try again.')
@@ -284,10 +300,10 @@ class Knowledge:
         for page in doc:
             page_limit = doc.page_count if not page_limit else page_limit
             if page.number <= page_limit:
-                block_content = page.get_text("blocks")
+                block_content = page.get_text("blocks") #.encode("utf8") # "blocks"
                 for block in block_content:
                     if block[6] == 0:  # I.e. only extract text
-                        plain_text = unidecode(block[4])
+                        plain_text = unidecode(block[4])  # .decode('latin1') #.decode('utf-8')
                         new_row = {'Source': document_name, 'Page': page.number, 'Content': plain_text}
                         content = pd.concat([content, pd.DataFrame.from_records([new_row])])
             else:
@@ -304,13 +320,12 @@ class Knowledge:
         Takes a PDF document and appends the sections to the knowledge df
         """
         # Extract the text into blocks
-        content = self.extract_pdf_text(filename_path, document_name)
+        knowledge = self.extract_pdf_text(filename_path, document_name)
 
-        section_texts = content['Content'].tolist()
-        page_numbers = content['Page'].tolist()
+        section_texts = knowledge['Content'].tolist()
+        page_numbers = knowledge['Page'].tolist()
         merged_texts = ['']
         merged_page_numbers = []
-        # self.max_tokens = 50
 
         for i in range(len(section_texts)):
             if num_tokens(section_texts[i]) <= self.max_tokens:
@@ -330,8 +345,17 @@ class Knowledge:
             else:  # very unlikely
                 pass  # NEED TO UPDATE THIS! Split the long bit up?
         merged_page_numbers = [str(pages) if len(pages)==0 else '/'.join(str(page) for page in pages) for pages in merged_page_numbers]
-        content = self.get_populated_knowledge_df(content=merged_texts, page=merged_page_numbers)
-        content['Source'] = document_name
+        knowledge = self.get_populated_knowledge_df(content=merged_texts, page=merged_page_numbers)
+        knowledge['Source'] = document_name
+
+        # Generate succinct heading information
+        knowledge = self.generate_source_column(knowledge, docType='PDF')
+
+        # conduct final formatting and getting embeddings
+        knowledge = self.format_and_get_embeddings(knowledge)
+
+        # Concat with main self.df
+        self.df = pd.concat([self.df, knowledge])
 
         log_and_print_message(
             f'The following PDF has been successfully added to the knowledge database: '
