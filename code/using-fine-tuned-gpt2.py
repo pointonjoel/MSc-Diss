@@ -26,6 +26,6 @@ def generate_text(model_path, sequence, max_length):
     print(tokenizer.decode(final_outputs[0], skip_special_tokens=True))
 
 output_dir = 'assets/knowledge/custom_q_and_a'
-sequence1 = "[Q] What is the name of this module?"
+sequence1 = "What is PCA?"
 max_len = 50
 generate_text(output_dir, sequence1, max_len) 
