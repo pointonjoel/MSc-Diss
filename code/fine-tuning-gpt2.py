@@ -63,7 +63,7 @@ print('should be 1000 ish')
 
 # Read documents from the directory
 #train_directory = '/content/drive/MyDrive/ColabNotebooks/data/chatbot_docs/training_data/full_text'
-train_directory = 'assets/knowledge/training_questions'
+train_directory = 'assets/knowledge/pdf_textbook' # training_questions
 text_data = read_txt(f'{train_directory}.txt')
 text_data = re.sub(r'\n+', '\n', text_data).strip()  # Remove excess newline characters
 
@@ -137,7 +137,7 @@ per_device_train_batch_size = 8
 num_train_epochs = 50.0
 save_steps = 50000
 
-print('About to train')
+print('About to train using {train_directory}')
 # Train
 train(
     train_file_path=train_file_path,
