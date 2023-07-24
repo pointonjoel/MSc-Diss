@@ -4,7 +4,8 @@ from config import *
 def format_request(example):
     question = example['question']
     context = example['answer']
-    return f'Answer the following question using the context provided. If you can\'t find an answer in the context provided then reply by only saying: [NO_ANS]. \n \n Question: {question} \n Context: {context}'
+    return f'Answer the following question using the context provided. If you can\'t find an answer in the context ' \
+           f'provided then reply by only saying: {NO_ANS_TOKEN}. \n \n Question: {question} \n Context: {context} '
 
 
 # Function to check if the loop has been run 3 times within the past 60 seconds
