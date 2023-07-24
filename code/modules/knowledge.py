@@ -1,6 +1,4 @@
 # from config import *
-import pandas as pd
-
 from embedding_functions import *
 
 
