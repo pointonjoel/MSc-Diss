@@ -16,7 +16,9 @@ class Query:
     def similarity(query_embedding: list,
                    knowledge_embedding: list
                    ) -> float:
-        """Calculates the cosine similarity score between the query and knowledge embedding vectors."""
+        """
+        Calculates the cosine similarity score between the query and knowledge embedding vectors.
+        """
 
         return 1 - spatial.distance.cosine(query_embedding, knowledge_embedding)
 

@@ -118,25 +118,7 @@ class DocTypeNotFoundError(LookupError):
 
 
 WIKI_PAGES = [
-    'Computer vision',
-    'Databases and indexing related concepts',
-    'Generic computer vision methods',
-    'Geometric and other image features and methods',
-    'Geometry and mathematics',
-    'Image physics related concepts',
-    'Image Processing Architectures & Control Structures',
-    'Image transformations and filters',
-    'Introductory visual neurophysiology',
-    'Introductory visual psychophysics/psychology',
-    'Motion and time sequence analysis related concepts',
-    'Non-sequential realization methods',
-    'Object, world and scene representations',
-    'Recognition and registration methods',
-    'Scene understanding/image analysis methods',
-    'Sensor fusion, registration and planning methods',
-    'Sensors and properties',
-    'System models, calibration and parameter estimation methods',
-    'Visual learning related methods and concepts'
+    'Computer vision'
 ]
 WIKI_PAGE = "Computer vision"
 SECTIONS_TO_IGNORE = [
