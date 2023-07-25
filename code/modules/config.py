@@ -10,7 +10,7 @@ from sentence_transformers import SentenceTransformer
 import pandas as pd  # for storing text and embeddings data
 import numpy as np  # for df manipulations
 import tiktoken  # for counting tokens
-from scipy import spatial  # for calculating vector similarities for search
+from scipy import spatial  # for calculating cosine similarities for search
 import wikipedia  # For sourcing Wikipedia article text
 import re  # for cutting <ref> links out of Wikipedia articles
 import mwparserfromhell  # for splitting Wikipedia articles into sections
@@ -37,10 +37,16 @@ from datasets import Dataset, DatasetDict, load_from_disk, concatenate_datasets
 from transformers import AutoModelForSeq2SeqLM
 from huggingface_hub.hf_api import HfFolder  # For pushing model to HF
 from transformers import Seq2SeqTrainingArguments  # For model training
+from transformers import TextDataset, DataCollatorForLanguageModeling # For MLM training
+from transformers import GPT2Tokenizer, GPT2LMHeadModel # For MLM training
+from transformers import Trainer, TrainingArguments # For MLM training
 from nltk.tokenize import sent_tokenize  # For model evaluation/rouge score
 from transformers import DataCollatorForSeq2Seq  # For model training
 from transformers import Seq2SeqTrainer  # For model training
 import time  # For batch querying GPT API
+from transformers import set_seed  # For loading models from a seed
+from transformers import pipeline  # For using models on the HF hub
+from transformers import EarlyStoppingCallback # To prevent overfitting of a model
 
 # Logging and GPU setup
 logging.basicConfig(filename='main.log', level=logging.DEBUG)  # , encoding='utf-8'
@@ -88,7 +94,8 @@ meteor = evaluate.load('meteor')
 nltk.download('punkt')
 
 # Need tokeniser setup - NEED TO RECONCILE THIS WITH THE ABOVE
-model_name = "google/mt5-small"  # "gpt2" "facebook/bart-large-xsum"
+set_seed(9)
+model_name = "google/mt5-small"  # "gpt2", "facebook/bart-large-xsum"
 short_model_name = model_name.split('/')[1]
 tokeniser = AutoTokenizer.from_pretrained(model_name)
 model = AutoModelForSeq2SeqLM.from_pretrained(model_name, device_map="auto",

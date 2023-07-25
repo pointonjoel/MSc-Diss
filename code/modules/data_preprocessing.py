@@ -2,7 +2,10 @@ from config import *
 
 
 class TrainingData:
-    def __init__(self, save_dir, load_dir='/content/drive/MyDrive/Diss/Output'):
+    def __init__(self,
+                 save_dir: str,
+                 load_dir: str = '/content/drive/MyDrive/Diss/Output'
+                 ):
         self.seed = 9  # For only keeping a subset of unanswerable questions
         self.prop = 0.3  # desired proportion of NO_ANS in final dataset
         self.test_prop = 0.2  # Train/Test split
@@ -36,14 +39,16 @@ class TrainingData:
         self.training_data.save_to_disk(self.save_dir)
         log_and_print_message(f'Dataset saved to {self.save_dir}')
 
-    def preprocess_data(self, df):
+    def preprocess_data(self, df: pd.DataFrame) -> pd.DataFrame:
+        """Pre-processes the data by removing any answers that are simply the first line (using n chars), and shrinks
+        the dataset by removing any excess unanswerable questions"""
         # Cleaning data and creating a new col for the model to use
         df['question'] = df['question'].astype(str)
         df['answer'] = df['answer'].astype(str)
         df['content'] = df['content'].astype(str)
         df['answer'] = df['answer'].str.replace('`` ', '"')  # Fixes an issue caused by the decoding
 
-        ### Fitering the dataset to only have high quality answers
+        # Fitering the dataset to only have high quality answers
         # Removing any articles where the answer is simply the first sentence/paragraph
         log_and_print_message(f'Original length: {len(df)}')
         df = df.loc[df['answer'].str[:self.num_chars_to_check] != df['content'].str[:self.num_chars_to_check]]
@@ -66,13 +71,16 @@ class TrainingData:
 
         log_and_print_message(f'Reduced dataset length to {len(df_filtered)} examples.')
 
-        # Create new col
-        # df_filtered['formatted_text'] = '[QUESTION_START] ' + df_filtered['question'] + ' \n\n [CONTEXT_START] ' + df_filtered['content']
+        # Reformat question column
         df_filtered['question'] = df_filtered['question'] + '?'
 
-        return df_filtered  # df
+        return df_filtered
 
-    def create_dataset_object(self):
+    def create_dataset_object(self) -> DatasetDict:
+        """
+        Creates an HF dataset object from training and validation dataframes
+        """
+
         dataset = DatasetDict({
             "training": Dataset.from_pandas(self.training_df),
             "validation": Dataset.from_pandas(self.validation_df)
@@ -81,6 +89,10 @@ class TrainingData:
 
     @staticmethod
     def tokenise(data):
+        """
+        Tokenises the question/context and answers for a DatasetDict object
+        """
+
         # tokenize the inputs (questions and contexts)
         additional_cols = tokeniser(data['content'], data['question'], truncation=False)
 
@@ -93,6 +105,10 @@ class TrainingData:
         return additional_cols
 
     def ensure_ans_non_ans_balance(self):
+        """
+        Removes any excess unanswerable questions so that there's only a desired proportion of them (default=0.3)
+        """
+
         # Extracting the unanswerable examples
         no_ans = self.training_data.filter(lambda row: (row["answer"] == NO_ANS_TOKEN))
         good_ans = self.training_data.filter(lambda row: (row["answer"] != NO_ANS_TOKEN))
@@ -116,6 +132,9 @@ class TrainingData:
         log_and_print_message(f'Reduced {splits[1]} dataset to {len(processed_dataset[splits[1]])} examples.')
 
     def final_cleaning(self):
+        """
+        Tokenises the dataset and removes any that are too long
+        """
         del self.validation_df
         del self.training_df
         gc.collect()
@@ -123,10 +142,14 @@ class TrainingData:
         self.training_data = self.training_data.map(self.tokenise, batched=True)
         self.training_data = self.training_data.filter(
             lambda row: (row["num_tokens"] >= self.min_tokens) & (row["num_tokens"] <= self.max_tokens))
-        self.num_training_examples = len(self.training_data['training'])
-        log_and_print_message(f'Overall reduced dataset from {self.num_provided_examples} to {self.num_training_examples} examples.')
+        num_training_examples = len(self.training_data['training'])
+        log_and_print_message(
+            f'Overall reduced dataset from {self.num_provided_examples} to {num_training_examples} examples.')
 
     def get_train_test_split(self):
+        """
+        Combines all examples/questions and creates a new train/test split
+        """
         combined_dataset = concatenate_datasets([self.training_data['training'], self.training_data['validation']])
         na = combined_dataset.filter(lambda row: (row["answer"] == NO_ANS_TOKEN))
         a = combined_dataset.filter(lambda row: (row["answer"] != NO_ANS_TOKEN))
