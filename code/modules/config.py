@@ -37,16 +37,16 @@ from datasets import Dataset, DatasetDict, load_from_disk, concatenate_datasets
 from transformers import AutoModelForSeq2SeqLM
 from huggingface_hub.hf_api import HfFolder  # For pushing model to HF
 from transformers import Seq2SeqTrainingArguments  # For model training
-from transformers import TextDataset, DataCollatorForLanguageModeling # For MLM training
-from transformers import GPT2Tokenizer, GPT2LMHeadModel # For MLM training
-from transformers import Trainer, TrainingArguments # For MLM training
+from transformers import TextDataset, DataCollatorForLanguageModeling  # For MLM training
+from transformers import GPT2Tokenizer, GPT2LMHeadModel  # For MLM training
+from transformers import Trainer, TrainingArguments  # For MLM training
 from nltk.tokenize import sent_tokenize  # For model evaluation/rouge score
 from transformers import DataCollatorForSeq2Seq  # For model training
 from transformers import Seq2SeqTrainer  # For model training
 import time  # For batch querying GPT API
 from transformers import set_seed  # For loading models from a seed
 from transformers import pipeline  # For using models on the HF hub
-from transformers import EarlyStoppingCallback # To prevent overfitting of a model
+from transformers import EarlyStoppingCallback  # To prevent overfitting of a model
 
 # Logging and GPU setup
 logging.basicConfig(filename='main.log', level=logging.DEBUG)  # , encoding='utf-8'
@@ -57,62 +57,64 @@ def log_and_print_message(msg):
     logging.warning(msg)
 
 
-device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-if torch.cuda.is_available():
-    log_and_print_message(f'Using GPU - details are as follows:')
-    log_and_print_message(f'__CUDNN VERSION: {torch.backends.cudnn.version()}')
-    log_and_print_message(f'__Number CUDA Devices: {torch.cuda.device_count()}')
-    log_and_print_message(f'__CUDA Device Name: {torch.cuda.get_device_name(0)}')
-    log_and_print_message(f'__CUDA Device Total Memory: {torch.cuda.get_device_properties(0).total_memory / 1e9}')
-else:
-    log_and_print_message(f'No GPU available, using a CPU')
-
 # Config
+CHATBOT_TOPIC = 'Computer Vision'
 OUTPUT_DIR = '/content/drive/MyDrive/Diss/Output'
 GPT_EMBEDDING_MODEL = "text-embedding-ada-002"
 BERT_EMBEDDING_MODEL = 'bert-base-nli-mean-tokens'
 GPT_MODEL = "gpt-3.5-turbo"
-BERT_MODEL = "deepset/bert-base-cased-squad2"
-BART_MODEL = 'vblagoje/bart_lfqa'
-GPT_KNOWLEDGE_FILENAME = "CompVisionGPT.csv"
-BERT_KNOWLEDGE_FILENAME = "CompVisionBERT.csv"
-BERT_ENCODING = BertTokenizer.from_pretrained(BERT_MODEL)
-GPT_ENCODING = tiktoken.encoding_for_model(GPT_MODEL)
-BART_ENCODING = BartTokenizer.from_pretrained(BART_MODEL)
+T5_MODEL = "google/mt5-small"
+BART_MODEL = "facebook/bart-large-xsum"
+# BERT_MODEL = "deepset/bert-base-cased-squad2"
+# BART_MODEL = 'vblagoje/bart_lfqa'
+MLM_HF_REFERENCE = 'psxjp5/mlm'
+T5_QA_HF_REFERENCE = 'psxjp5/mt5-small'
+T5_QA_GPT_HF_REFERENCE = 'psxjp5/mt5-small_gpt_ans'
+BART_QA_GPT_HF_REFERENCE = 'psxjp5/mt5-small_gpt_ans'
+# BERT_ENCODING = BertTokenizer.from_pretrained(BERT_MODEL)
+GPT_TOKENISER = tiktoken.encoding_for_model(GPT_MODEL)
+T5_TOKENISER = AutoTokenizer.from_pretrained(T5_QA_GPT_HF_REFERENCE)
+BART_TOKENISER = AutoTokenizer.from_pretrained(BART_QA_GPT_HF_REFERENCE)
+# BART_ENCODING = BartTokenizer.from_pretrained(BART_MODEL)
 GPT_MAX_SECTION_TOKENS = 1600  # max number of tokens per section
+T5_MAX_SECTION_TOKENS = 1024  # max number of tokens per section
+BART_MAX_SECTION_TOKENS = 1024  # max number of tokens per section
 GPT_QUERY_TOKEN_LIMIT = 4096 - 500  # Allows 500 for the response
 BERT_MAX_SECTION_TOKENS = 460  # max tokens per section, allowing
 # Need to include a check to ensure that the section length is less than the query length (plus the preamble for GPT)
 MIN_LENGTH = 50  # min CHARACTER length for each section
-SEED = 9
+SEED = 9  # For reproducibility of model training
 RPM = 60  # The RPM limit for querying GPT
+NO_ANS_TOKEN = '[NO_ANS]'  # For training the QA model to detect unanswerable questions
+ANSWER_NOT_FOUND_MSG = "I could not find an answer in the text I\'ve been provided, sorry! Please try again."
 
-# For model evaluation
+# Downloading metrics for model evaluation
 rouge_score = evaluate.load("rouge")
 sacrebleu = evaluate.load("sacrebleu")
 meteor = evaluate.load('meteor')
 nltk.download('punkt')
 
-# Need tokeniser setup - NEED TO RECONCILE THIS WITH THE ABOVE
-set_seed(9)
-model_name = "google/mt5-small"  # "gpt2", "facebook/bart-large-xsum"
-short_model_name = model_name.split('/')[1]
-tokeniser = AutoTokenizer.from_pretrained(model_name)
-model = AutoModelForSeq2SeqLM.from_pretrained(model_name, device_map="auto",
-                                              torch_dtype="auto")  # NEED TO REMOVE THIS AND HAVE IT WITHIN THE TRAINER INSTANTIATION
-NO_ANS_TOKEN = '[NO_ANS]'
-if tokeniser.pad_token is None:
-    tokeniser.add_special_tokens({'pad_token': '[PAD]', 'mask_token': '[MASK]'})
-tokeniser.add_special_tokens(
-    {'mask_token': '[MASK]', 'additional_special_tokens': [NO_ANS_TOKEN, '[QUESTION_START]', '[CONTEXT_START]']})
-model.resize_token_embeddings(len(tokeniser))
 
-ANSWER_NOT_FOUND_MSG = "I could not find an answer in the text I\'ve been provided, sorry! Please try again."
+def add_special_tokens(raw_tokeniser):
+    if raw_tokeniser.pad_token is None:
+        raw_tokeniser.add_special_tokens({'pad_token': '[PAD]'})
+    raw_tokeniser.add_special_tokens({'additional_special_tokens': [NO_ANS_TOKEN]})
+    return raw_tokeniser
+
+# SEARCH THE WHOLE PROJECT FOR 'TOKENISER'
+
 
 
 class DocTypeNotFoundError(LookupError):
     """
     Raise this when there's an error with the doctype not being specified
+    """
+    pass
+
+
+class ModelNotSupportedError(LookupError):
+    """
+    Raise this when the chosen model isn't supported with a tokeniser
     """
     pass
 

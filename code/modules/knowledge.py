@@ -1,28 +1,55 @@
 # from config import *
+import pandas as pd
+
 from embedding_functions import *
 
 
 class Knowledge:
-    def __init__(self, topic, model):
-        self.topic: str = topic
-        self.model: str = model
-        self.token_model = self.get_token_model()
-        self.embedding_model: str = self.get_embedding_model()
+    def __init__(self, chatbot_topic: str, model_family: str = 'T5'):
+        self.chatbot_topic: str = chatbot_topic  # The chatbot domain, used to export the knowledge as a csv file
+        self.model_family: str = model_family  # The model type, used to detect the tokeniser
+        self.token_model = self.get_token_model()  # Used to calculate the number of tokens per section
+        self.embedding_model: str = BERT_EMBEDDING_MODEL  # Needs to be consistent with the query embedding model
         self.df: pd.DataFrame = self.get_blank_knowledge_df()  # need to add code to remove small sections (<16 chars?)
         self.max_tokens: int = self.get_max_tokens()  # max number of tokens per section
-        self.min_section_length = MIN_LENGTH  # min character length for each section
+        self.min_section_length: int = MIN_LENGTH  # min character length for each section
 
     def get_token_model(self):
-        return GPT_ENCODING if self.model == 'GPT' else BERT_ENCODING
+        """
+        Checks the model_family is appropriate and returns the relevant tokeniser.
+        """
+        if self.model_family == 'GPT':
+            return GPT_TOKENISER
+        elif self.model_family == 'T5':
+            return T5_TOKENISER
+        elif self.model_family == 'BART':
+            return BART_TOKENISER
+        else:
+            raise ModelNotSupportedError('The model type doesn\'t have an associated Tokeniser and as such isn\'t '
+                                         'currently supported. Please select from GPT, T5 and BART.')
 
     def get_max_tokens(self):
-        return GPT_MAX_SECTION_TOKENS if self.model == 'GPT' else BERT_MAX_SECTION_TOKENS
+        """
+        Checks the model_family is appropriate and returns the number of tokens the model can handle per section.
+        """
+        if self.model_family == 'GPT':
+            return GPT_MAX_SECTION_TOKENS
+        elif self.model_family == 'T5':
+            return T5_MAX_SECTION_TOKENS
+        elif self.model_family == 'BART':
+            return BART_MAX_SECTION_TOKENS
+        else:
+            raise ModelNotSupportedError('The model type isn\'t currently supported. Please select from GPT, T5 and '
+                                         'BART.')
 
-    def get_embedding_model(self):
-        return GPT_EMBEDDING_MODEL if self.model == 'GPT' else BERT_EMBEDDING_MODEL
+    # def get_embedding_model(self):
+    #     return GPT_EMBEDDING_MODEL if self.model_family == 'GPT' else BERT_EMBEDDING_MODEL
 
     @staticmethod
     def get_blank_knowledge_df() -> pd.DataFrame:
+        """
+        Creates a blank dataframe to contain the sections of knowledge.
+        """
         return pd.DataFrame(columns=['Source', 'Heading', 'Subheading', 'Page', 'Content'])
 
     # @staticmethod
@@ -33,6 +60,9 @@ class Knowledge:
                                    page: list = (),
                                    content: list = ()
                                    ) -> pd.DataFrame:
+        """
+        Converts a list of data into a populated dataframe of sections of knowledge.
+        """
         knowledge = self.get_blank_knowledge_df()
         if source:
             knowledge['Source'] = source
@@ -45,13 +75,6 @@ class Knowledge:
         if content:
             knowledge['Content'] = content
 
-        # knowledge = pd.DataFrame(
-        #     {'Source': source,
-        #      'Heading': heading,
-        #      'Subheading': subheading,
-        #      'Page': page,
-        #      'Content': content}
-        # )
         return knowledge
 
     def extract_wiki_sections(self,
@@ -60,7 +83,7 @@ class Knowledge:
                               sections_to_ignore: list = SECTIONS_TO_IGNORE
                               ) -> pd.DataFrame:
         """
-        Creates a df of sections by extracting section content from a Wikicode
+        Creates a df of sections by extracting section content from a Wikicode.
         """
 
         knowledge = self.get_blank_knowledge_df()
@@ -93,18 +116,18 @@ class Knowledge:
         return knowledge
 
     @staticmethod
-    def generate_source_column(df: pd.DataFrame, docType: str = 'Wiki') -> pd.DataFrame:
+    def generate_source_column(df: pd.DataFrame, doc_type: str = 'Wiki') -> pd.DataFrame:
         """
-        Creates a new column in the df which contains a summary of the source location
+        Creates a new column in the df which contains a summary of the source location.
         """
 
         df.fillna('', inplace=True)
 
-        if docType == 'Wiki':
+        if doc_type == 'Wiki':
             df['Section'] = df['Source'] + '->' + df['Heading'] + '->' + df['Subheading']
             df['Section'] = df['Section'].str.replace('->->', '')
             df['Section'] = df['Section'].str.rstrip('_->')
-        elif docType == 'PDF':
+        elif doc_type == 'PDF':
             df['Section'] = df['Source'] + '->Page(s)' + df['Page']
         else:
             raise DocTypeNotFoundError('DocType not specified - could not produce the source column.')
@@ -113,7 +136,7 @@ class Knowledge:
     @staticmethod
     def clean_section_contents(df: pd.DataFrame) -> pd.DataFrame:
         """
-        Returns a cleaned up section with <ref>xyz</ref> patterns and leading/trailing whitespace removed
+        Returns a cleaned up section with <ref>xyz</ref> patterns and leading/trailing whitespace removed.
         """
 
         # text = re.sub(r"<ref.*?</ref>", "", text)
@@ -123,6 +146,9 @@ class Knowledge:
         return df
 
     def merge_elements_of_list(self, list_of_strings: list, delimiter: str = "\n"):
+        """
+        Merges a list of strings together where possible, as long as each string is less than the max_tokens limit.
+        """
         potential_for_more_merging = False
         merged_list = []
         skip_item = False
@@ -144,9 +170,9 @@ class Knowledge:
 
     def force_split_string(self,
                            string: str,
-                           encoding=GPT_ENCODING) -> list:
+                           encoding=GPT_TOKENISER) -> list:
         """
-        Force a section to be split into 2 (to be used if it has no delimiter)
+        Force a section to be split into 2 (to be used if it has no delimiter).
         """
 
         list_of_strings = []
@@ -165,9 +191,9 @@ class Knowledge:
                     list_of_strings.append(remainder_of_string)
         return list_of_strings
 
-    def split_long_sections(self, df: pd.DataFrame, delimiter: str = '\n'):
+    def split_long_sections(self, df: pd.DataFrame, delimiter: str = '\n') -> pd.DataFrame:
         """
-        Splits long sections of text into smaller ones, using each delimiter
+        Splits long sections of text into smaller ones, using each delimiter.
         """
 
         new_dict_of_shorter_sections = self.get_blank_knowledge_df().to_dict('records')
@@ -209,13 +235,16 @@ class Knowledge:
                     new_dict_of_shorter_sections.append(item_to_append)
         return pd.DataFrame(new_dict_of_shorter_sections)
 
-    def format_and_get_embeddings(self, knowledge):
+    def format_and_get_embeddings(self, knowledge: pd.DataFrame) -> pd.DataFrame:
+        """
+        Formats the knowledge dataframe 'content' column and obtains embeddings for each section content.
+        """
         # Append '\n' to the start if it doesn't already have one
         knowledge.loc[~knowledge['Content'].str.startswith('\n'), 'Content'] = '\n' + knowledge.loc[
             ~knowledge['Content'].str.startswith('\n'), 'Content']
 
         # Get embeddings
-        if self.model == 'GPT':
+        if self.model_family == 'GPT':
             response = get_embedding(list(knowledge['Content']), embedding_model=self.embedding_model)
             for i, be in enumerate(response["data"]):
                 assert i == be["index"]  # double check embeddings are in same order as input
@@ -223,7 +252,7 @@ class Knowledge:
             knowledge['Embedding'] = batch_embeddings
         else:
             knowledge['Embedding'] = get_embedding(list(knowledge['Content']),
-                                                      embedding_model=self.embedding_model).tolist()
+                                                   embedding_model=self.embedding_model).tolist()
 
         knowledge['Tokens'] = knowledge["Content"].apply(lambda x: num_tokens(x, token_model=self.token_model))
         return knowledge
@@ -231,7 +260,7 @@ class Knowledge:
     def append_wikipedia_page(self, page_name: str,
                               sections_to_ignore: list = SECTIONS_TO_IGNORE):
         """
-        Takes a wikipedia page and appends the sections to the knowledge df
+        Takes a wikipedia page and appends the sections to the knowledge df.
         """
 
         try:
@@ -250,7 +279,7 @@ class Knowledge:
             knowledge = pd.concat([knowledge, section_content])
 
             # Generate succinct heading information
-            knowledge = self.generate_source_column(knowledge, docType='Wiki')
+            knowledge = self.generate_source_column(knowledge, doc_type='Wiki')
 
             # Remove unwanted strings and whitespace
             knowledge = self.clean_section_contents(knowledge)
@@ -277,7 +306,11 @@ class Knowledge:
         except wikipedia.exceptions.PageError:  # The wiki page doesn't exist
             log_and_print_message(f'The wiki page {page_name} can\'t be found. Please check and try again.')
 
-    def sentence_end(self, text: str, separators: list = ('.', '!', '?')) -> bool:
+    @staticmethod
+    def sentence_end(text: str, separators: list = ('.', '!', '?')) -> bool:
+        """
+        Detects whether there is an end of a sentence.
+        """
         for sep in separators:
             if text.endswith(sep):
                 return True
@@ -290,6 +323,9 @@ class Knowledge:
                          filename_path: str,
                          document_name: str,
                          page_limit: int = None) -> pd.DataFrame:
+        """
+        Parses the PDF using Fitz, extracting and cleaning the text.
+        """
         # Open document
         doc = fitz.open(filename_path)
         content = self.get_blank_knowledge_df()
@@ -298,7 +334,7 @@ class Knowledge:
         for page in doc:
             page_limit = doc.page_count if not page_limit else page_limit
             if page.number <= page_limit:
-                block_content = page.get_text("blocks") #.encode("utf8") # "blocks"
+                block_content = page.get_text("blocks")  # .encode("utf8") # "blocks"
                 for block in block_content:
                     if block[6] == 0:  # I.e. only extract text
                         plain_text = unidecode(block[4])  # .decode('latin1') #.decode('utf-8')
@@ -315,7 +351,7 @@ class Knowledge:
 
     def append_pdf(self, filename_path: str, document_name: str):
         """
-        Takes a PDF document and appends the sections to the knowledge df
+        Takes a PDF document and appends the sections to the knowledge df.
         """
         # Extract the text into blocks
         knowledge = self.extract_pdf_text(filename_path, document_name)
@@ -333,7 +369,8 @@ class Knowledge:
                     if len(merged_page_numbers) == 0:  # i.e. the 1st piece of text
                         merged_page_numbers.append([page_numbers[i]])
                     elif page_numbers[i] not in merged_page_numbers[-1]:  # to find the combined page number
-                        merged_page_numbers[-1] = merged_page_numbers[-1] + [page_numbers[i]] #f'{merged_page_numbers[-1]}/{page_numbers[i]}'
+                        merged_page_numbers[-1] = merged_page_numbers[-1] + [
+                            page_numbers[i]]  # f'{merged_page_numbers[-1]}/{page_numbers[i]}'
                     else:
                         pass
                 else:  # we can't merge the current text with the previous ones
@@ -342,12 +379,13 @@ class Knowledge:
                     pass
             else:  # very unlikely
                 pass  # NEED TO UPDATE THIS! Split the long bit up?
-        merged_page_numbers = [str(pages) if len(pages)==0 else '/'.join(str(page) for page in pages) for pages in merged_page_numbers]
+        merged_page_numbers = [str(pages) if len(pages) == 0 else '/'.join(str(page) for page in pages) for pages in
+                               merged_page_numbers]
         knowledge = self.get_populated_knowledge_df(content=merged_texts, page=merged_page_numbers)
         knowledge['Source'] = document_name
 
         # Generate succinct heading information
-        knowledge = self.generate_source_column(knowledge, docType='PDF')
+        knowledge = self.generate_source_column(knowledge, doc_type='PDF')
 
         # conduct final formatting and getting embeddings
         knowledge = self.format_and_get_embeddings(knowledge)
@@ -359,10 +397,9 @@ class Knowledge:
             f'The following PDF has been successfully added to the knowledge database: '
             f'{document_name} ({filename_path})')
 
-    def export_to_csv(self, filename):
+    def export_to_csv(self):
         """
-        Saves the knowledge df to a CSV file
+        Saves the knowledge df to a CSV file.
         """
 
-        location = 'assets/' + filename
-        self.df.to_csv(location, index=False)
+        self.df.to_csv(f'assets/{self.chatbot_topic}_knowledge.csv', index=False)

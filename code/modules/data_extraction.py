@@ -34,7 +34,7 @@ def remove_references(sentence: str) -> str:
 class AllData:
     def __init__(self,
                  default: str = 'dev',
-                 cache_dir: None = None
+                 cache_dir: str = None,
                  ):
         self.dataset = load_dataset("natural_questions", default, cache_dir=cache_dir)
         if default != 'dev':

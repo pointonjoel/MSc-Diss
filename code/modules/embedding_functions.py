@@ -4,15 +4,20 @@ from config import *
 
 def num_tokens(
         text: str,
-        token_model=GPT_ENCODING
+        token_model=GPT_TOKENISER
 ) -> int:
     """
     Returns the number of tokens in a string.
     """
-    if token_model == GPT_ENCODING:
+    if token_model == GPT_TOKENISER:
         return len(token_model.encode(text))
-    elif token_model == BERT_ENCODING:
+    elif token_model == T5_TOKENISER:
         return len(token_model.tokenize(text))
+    elif token_model == BART_TOKENISER:
+        return len(token_model.tokenize(text))
+    else:
+        raise ModelNotSupportedError('The model type isn\'t currently supported. Please select from GPT, T5 and '
+                                     'BART.')
 
 
 def get_embedding(content: list or str, embedding_model: str = GPT_EMBEDDING_MODEL):
