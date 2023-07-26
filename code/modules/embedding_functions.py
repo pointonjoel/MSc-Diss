@@ -1,10 +1,12 @@
-from config import *
+from config import GPT_TOKENISER, T5_TOKENISER, BART_TOKENISER, GPT_EMBEDDING_MODEL, ModelNotSupportedError, openai
+
+
 # Used throughout
 
 
 def num_tokens(
         text: str,
-        token_model=GPT_TOKENISER
+        token_model  # = GPT_TOKENISER
 ) -> int:
     """
     Returns the number of tokens in a string.
@@ -27,8 +29,7 @@ def get_embedding(content: list or str, embedding_model: str = GPT_EMBEDDING_MOD
     if embedding_model == GPT_EMBEDDING_MODEL:
         return openai.Embedding.create(input=content, model=embedding_model)
     else:
-        similarity_model = SentenceTransformer(embedding_model)
-        return similarity_model.encode(content)
+        return embedding_model.encode(content)
 
 
 def is_float(value):

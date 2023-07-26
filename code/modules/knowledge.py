@@ -1,7 +1,6 @@
-# from config import *
-import pandas as pd
-
 from embedding_functions import *
+from config import GENERAL_EMBEDDING_MODEL, MIN_LENGTH, GPT_MAX_SECTION_TOKENS, pd, mwparserfromhell
+from config import SECTIONS_TO_IGNORE, DocTypeNotFoundError, wikipedia, log_and_print_message, fitz, unidecode, re
 
 
 class Knowledge:
@@ -9,7 +8,7 @@ class Knowledge:
         self.chatbot_topic: str = chatbot_topic  # The chatbot domain, used to export the knowledge as a csv file
         self.model_family: str = model_family  # The model type, used to detect the tokeniser
         self.token_model = self.get_token_model()  # Used to calculate the number of tokens per section
-        self.embedding_model: str = BERT_EMBEDDING_MODEL  # Needs to be consistent with the query embedding model
+        self.embedding_model: str = GENERAL_EMBEDDING_MODEL  # Needs to be consistent with the query embedding model
         self.df: pd.DataFrame = self.get_blank_knowledge_df()  # need to add code to remove small sections (<16 chars?)
         self.max_tokens: int = self.get_max_tokens()  # max number of tokens per section
         self.min_section_length: int = MIN_LENGTH  # min character length for each section
@@ -32,18 +31,16 @@ class Knowledge:
         """
         Checks the model_family is appropriate and returns the number of tokens the model can handle per section.
         """
-        if self.model_family == 'GPT':
+        if self.embedding_model == GPT_EMBEDDING_MODEL:
             return GPT_MAX_SECTION_TOKENS
-        elif self.model_family == 'T5':
-            return T5_MAX_SECTION_TOKENS
-        elif self.model_family == 'BART':
-            return BART_MAX_SECTION_TOKENS
+        elif self.embedding_model == GENERAL_EMBEDDING_MODEL:
+            return GENERAL_EMBEDDING_MODEL.max_seq_length
         else:
-            raise ModelNotSupportedError('The model type isn\'t currently supported. Please select from GPT, T5 and '
+            raise ModelNotSupportedError('The EMBEDDING model type isn\'t currently supported. Please select from GPT, T5 and '
                                          'BART.')
 
     # def get_embedding_model(self):
-    #     return GPT_EMBEDDING_MODEL if self.model_family == 'GPT' else BERT_EMBEDDING_MODEL
+    #     return GPT_EMBEDDING_MODEL if self.model_family == 'GPT' else GENERAL_EMBEDDING_MODEL
 
     @staticmethod
     def get_blank_knowledge_df() -> pd.DataFrame:

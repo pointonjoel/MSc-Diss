@@ -139,7 +139,7 @@ class Query:
     # def ask_bert(cls,
     #              query_text: str,
     #              chatbot_instance: ChatBot,
-    #              embedding_model: str = BERT_EMBEDDING_MODEL,
+    #              embedding_model: str = GENERAL_EMBEDDING_MODEL,
     #              encoding_model: BertTokenizer = BERT_ENCODING,
     #              bert_model: str = BERT_MODEL,
     #              show_source: bool = True,

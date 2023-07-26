@@ -61,7 +61,7 @@ def log_and_print_message(msg):
 CHATBOT_TOPIC = 'Computer Vision'
 OUTPUT_DIR = '/content/drive/MyDrive/Diss/Output'
 GPT_EMBEDDING_MODEL = "text-embedding-ada-002"
-BERT_EMBEDDING_MODEL = 'bert-base-nli-mean-tokens'
+GENERAL_EMBEDDING_MODEL = SentenceTransformer('all-mpnet-base-v2')
 GPT_MODEL = "gpt-3.5-turbo"
 T5_MODEL = "google/mt5-small"
 BART_MODEL = "facebook/bart-large-xsum"
