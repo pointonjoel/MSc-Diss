@@ -2,9 +2,12 @@ from config import *
 
 
 class ChatBot:
-    def __init__(self, chatbot_topic: str):
+    def __init__(self, chatbot_topic: str, hf_reference: str = None):
         self.chatbot_topic = chatbot_topic
         self.knowledge = None
+        self.hf_reference = hf_reference
+        self.model = self.get_model()  # If None then the GPT model will be used
+        self.tokeniser = self.get_tokeniser()  # If None then the GPT tokeniser will be used
         self.load_data()
 
     def load_data(self):
@@ -17,7 +20,22 @@ class ChatBot:
         # convert embeddings from CSV str type back to list type
         self.knowledge['Embedding'] = self.knowledge['Embedding'].apply(ast.literal_eval)
 
-        # Format the knowledge df by adding section prefix and token sizes
-        # self.knowledge['Content'] = 'Article section:\n\n' + self.knowledge['Content']
-        # self.knowledge['Tokens'] = self.knowledge["text"].apply(lambda x: num_tokens(x))
-        # self.knowledge['Section'] = 'Wikipedia'
+    def get_model(self):
+        """
+        Loads the finetuned model if appropriate
+        """
+
+        if self.hf_reference:
+            return AutoModelForSeq2SeqLM.from_pretrained(self.hf_reference)
+        else:
+            return
+
+    def get_tokeniser(self):
+        """
+        Loads the finetuned tokeniser if appropriate
+        """
+
+        if self.hf_reference:
+            return AutoTokenizer.from_pretrained(self.hf_reference)
+        else:
+            return

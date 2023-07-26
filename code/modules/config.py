@@ -61,7 +61,9 @@ def log_and_print_message(msg):
 CHATBOT_TOPIC = 'Computer Vision'
 OUTPUT_DIR = '/content/drive/MyDrive/Diss/Output'
 GPT_EMBEDDING_MODEL = "text-embedding-ada-002"
-GENERAL_EMBEDDING_MODEL = SentenceTransformer('all-mpnet-base-v2')
+EMBEDDING_MODEL_HF_REFERENCE = 'sentence-transformers/all-mpnet-base-v2'
+GENERAL_EMBEDDING_MODEL = SentenceTransformer(EMBEDDING_MODEL_HF_REFERENCE)
+GENERAL_TOKENISER = AutoTokenizer.from_pretrained(EMBEDDING_MODEL_HF_REFERENCE)
 GPT_MODEL = "gpt-3.5-turbo"
 T5_MODEL = "google/mt5-small"
 BART_MODEL = "facebook/bart-large-xsum"
@@ -94,6 +96,19 @@ sacrebleu = evaluate.load("sacrebleu")
 meteor = evaluate.load('meteor')
 nltk.download('punkt')
 
+# Setup GPU
+device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+if torch.cuda.is_available():
+    log_and_print_message(f'Using GPU - details are as follows:')
+    log_and_print_message(f'__CUDNN VERSION: {torch.backends.cudnn.version()}')
+    log_and_print_message(f'__Number CUDA Devices: {torch.cuda.device_count()}')
+    log_and_print_message(f'__CUDA Device Name: {torch.cuda.get_device_name(0)}')
+    log_and_print_message(f'__CUDA Device Total Memory: {torch.cuda.get_device_properties(0).total_memory / 1e9}')
+else:
+    log_and_print_message(f'No GPU available, using a CPU')
+
+# Connect to HF to push the model
+HfFolder.save_token("ADD_TOKEN_HERE")
 
 def add_special_tokens(raw_tokeniser):
     if raw_tokeniser.pad_token is None:
@@ -101,8 +116,8 @@ def add_special_tokens(raw_tokeniser):
     raw_tokeniser.add_special_tokens({'additional_special_tokens': [NO_ANS_TOKEN]})
     return raw_tokeniser
 
-# SEARCH THE WHOLE PROJECT FOR 'TOKENISER'
 
+# SEARCH THE WHOLE PROJECT FOR 'TOKENISER'
 
 
 class DocTypeNotFoundError(LookupError):

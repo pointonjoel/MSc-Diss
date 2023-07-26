@@ -1,35 +1,29 @@
 from embedding_functions import *
-from config import GENERAL_EMBEDDING_MODEL, MIN_LENGTH, GPT_MAX_SECTION_TOKENS, pd, mwparserfromhell
-from config import SECTIONS_TO_IGNORE, DocTypeNotFoundError, wikipedia, log_and_print_message, fitz, unidecode, re
+from config import GENERAL_EMBEDDING_MODEL, MIN_LENGTH, GPT_MAX_SECTION_TOKENS, pd, mwparserfromhell, GENERAL_TOKENISER
+from config import SECTIONS_TO_IGNORE, DocTypeNotFoundError, wikipedia, log_and_print_message, fitz, unidecode, re, tqdm
 
 
 class Knowledge:
-    def __init__(self, chatbot_topic: str, model_family: str = 'T5'):
+    def __init__(self, chatbot_topic: str):
         self.chatbot_topic: str = chatbot_topic  # The chatbot domain, used to export the knowledge as a csv file
-        self.model_family: str = model_family  # The model type, used to detect the tokeniser
-        self.token_model = self.get_token_model()  # Used to calculate the number of tokens per section
+        # self.model_family: str = model_family  # The model type, used to detect the tokeniser
+        self.token_model = GENERAL_TOKENISER  # Used to calculate the number of tokens per section
         self.embedding_model: str = GENERAL_EMBEDDING_MODEL  # Needs to be consistent with the query embedding model
         self.df: pd.DataFrame = self.get_blank_knowledge_df()  # need to add code to remove small sections (<16 chars?)
         self.max_tokens: int = self.get_max_tokens()  # max number of tokens per section
         self.min_section_length: int = MIN_LENGTH  # min character length for each section
 
-    def get_token_model(self):
-        """
-        Checks the model_family is appropriate and returns the relevant tokeniser.
-        """
-        if self.model_family == 'GPT':
-            return GPT_TOKENISER
-        elif self.model_family == 'T5':
-            return T5_TOKENISER
-        elif self.model_family == 'BART':
-            return BART_TOKENISER
-        else:
-            raise ModelNotSupportedError('The model type doesn\'t have an associated Tokeniser and as such isn\'t '
-                                         'currently supported. Please select from GPT, T5 and BART.')
+    # @staticmethod
+    # def get_token_model():
+    #     """
+    #     Checks the model_family is appropriate and returns the relevant tokeniser.
+    #     """
+    #
+    #     return AutoTokenizer.from_pretrained(EMBEDDING_MODEL_HF_REFERENCE)
 
     def get_max_tokens(self):
         """
-        Checks the model_family is appropriate and returns the number of tokens the model can handle per section.
+        Checks the model is appropriate and returns the number of tokens the model can handle per section.
         """
         if self.embedding_model == GPT_EMBEDDING_MODEL:
             return GPT_MAX_SECTION_TOKENS
@@ -155,7 +149,7 @@ class Knowledge:
                     merged_list.append(list_of_strings[i])
                 else:
                     merged_strings = list_of_strings[i] + delimiter + list_of_strings[i + 1]
-                    if num_tokens(merged_strings) <= self.max_tokens:
+                    if num_tokens(merged_strings, token_model=self.token_model) <= self.max_tokens:
                         merged_list.append(merged_strings)
                         skip_item = True  # make it skip the element we just merged
                         potential_for_more_merging = True
@@ -173,7 +167,7 @@ class Knowledge:
         """
 
         list_of_strings = []
-        if num_tokens(string) <= self.max_tokens:
+        if num_tokens(string, token_model=self.token_model) <= self.max_tokens:
             return [string]
         else:
             needs_truncating = True
@@ -183,7 +177,7 @@ class Knowledge:
                 remainder_of_string = encoding.decode(encoded_string[self.max_tokens:])
                 list_of_strings.append(truncated_string)
                 string = remainder_of_string
-                if num_tokens(remainder_of_string) <= self.max_tokens:
+                if num_tokens(remainder_of_string, token_model=self.token_model) <= self.max_tokens:
                     needs_truncating = False
                     list_of_strings.append(remainder_of_string)
         return list_of_strings
@@ -221,13 +215,13 @@ class Knowledge:
                     for string in text:
                         item_to_append = {'Source': section['Source'], 'Heading': section['Heading'],
                                           'Subheading': section['Subheading'], 'Content': string,
-                                          'Section': section['Section'], 'Tokens': num_tokens(string)}
+                                          'Section': section['Section'], 'Tokens': num_tokens(string, token_model=self.token_model)}
 
                         new_dict_of_shorter_sections.append(item_to_append)
                 else:
                     item_to_append = {'Source': section['Source'], 'Heading': section['Heading'],
                                       'Subheading': section['Subheading'], 'Content': text[0],
-                                      'Section': section['Section'], 'Tokens': num_tokens(text[0])}
+                                      'Section': section['Section'], 'Tokens': num_tokens(text[0], token_model=self.token_model)}
                     # we shouldn't have this because the text should be more than the acceptable number of tokens
                     new_dict_of_shorter_sections.append(item_to_append)
         return pd.DataFrame(new_dict_of_shorter_sections)
@@ -241,17 +235,19 @@ class Knowledge:
             ~knowledge['Content'].str.startswith('\n'), 'Content']
 
         # Get embeddings
-        if self.model_family == 'GPT':
-            response = get_embedding(list(knowledge['Content']), embedding_model=self.embedding_model)
-            for i, be in enumerate(response["data"]):
-                assert i == be["index"]  # double check embeddings are in same order as input
-            batch_embeddings = [e["embedding"] for e in response["data"]]
-            knowledge['Embedding'] = batch_embeddings
-        else:
-            knowledge['Embedding'] = get_embedding(list(knowledge['Content']),
-                                                   embedding_model=self.embedding_model).tolist()
-
+        # if self.model_family == 'GPT':
+        #     response = get_embedding(list(knowledge['Content']), embedding_model=self.embedding_model)
+        #     for i, be in enumerate(response["data"]):
+        #         assert i == be["index"]  # double check embeddings are in same order as input
+        #     batch_embeddings = [e["embedding"] for e in response["data"]]
+        #     knowledge['Embedding'] = batch_embeddings
         knowledge['Tokens'] = knowledge["Content"].apply(lambda x: num_tokens(x, token_model=self.token_model))
+        # embedding_list = []
+        # for paragraph in tqdm(list(knowledge['Content'])):
+        #     new_embedding = get_embedding(paragraph, embedding_model=self.embedding_model)
+        #     embedding_list.append(new_embedding)
+        knowledge['Embedding'] = get_embedding(list(knowledge['Content']), embedding_model=self.embedding_model).tolist()
+        # [get_embedding(paragraph, embedding_model=self.embedding_model) for paragraph in list(knowledge['Content'])]
         return knowledge
 
     def append_wikipedia_page(self, page_name: str,
@@ -359,9 +355,9 @@ class Knowledge:
         merged_page_numbers = []
 
         for i in range(len(section_texts)):
-            if num_tokens(section_texts[i]) <= self.max_tokens:
+            if num_tokens(section_texts[i], token_model=self.token_model) <= self.max_tokens:
                 merged_text = merged_texts[-1] + section_texts[i]
-                if num_tokens(merged_text) <= self.max_tokens:  # i.e. we can merge the text without it being too long
+                if num_tokens(merged_text, token_model=self.token_model) <= self.max_tokens:  # i.e. we can merge the text without it being too long
                     merged_texts[-1] = merged_text  # Update the latest line with the merged text
                     if len(merged_page_numbers) == 0:  # i.e. the 1st piece of text
                         merged_page_numbers.append([page_numbers[i]])

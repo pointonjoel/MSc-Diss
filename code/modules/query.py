@@ -69,7 +69,10 @@ class Query:
         question = f"\n\nQuestion: {self.content}"
 
         # Ensure number of tokens is within the limit
-        message_and_question_tokens = num_tokens(introduction + question)
+        message_and_question_tokens = num_tokens(introduction + question,
+                                                 token_model=GPT_TOKENISER)  # NEED TO CHECK THIS
+        self.knowledge_used['Tokens'] = self.knowledge_used["Content"].apply(
+            lambda x: num_tokens(x, token_model=GPT_TOKENISER))
         self.knowledge_used['Cumulative_tokens'] = self.knowledge_used['Tokens'].cumsum()
         self.knowledge_used['Cumulative_tokens'] += message_and_question_tokens  # add the initial number of tokens
         self.knowledge_used = self.knowledge_used.loc[self.knowledge_used['Cumulative_tokens'] < self.token_limit]
@@ -78,6 +81,22 @@ class Query:
         combined_knowledge_string = ''.join(list(self.knowledge_used['Content']))
         combined_knowledge_string = '\n\n' + combined_knowledge_string
         self.gpt_message = introduction + combined_knowledge_string + question
+
+    def get_finetuned_context(self, chatbot_instance):
+        self.knowledge_ranked_by_similarity()
+
+        # Ensure number of tokens is within the limit
+        question_tokens = num_tokens(self.content, token_model=chatbot_instance.tokeniser)  # NEED TO CHECK THIS
+        self.knowledge_used['Tokens'] = self.knowledge_used["Content"].apply(
+            lambda x: num_tokens(x, token_model=chatbot_instance.tokeniser))  # Update number of tokens with the finetuned tokeniser
+        self.knowledge_used['Cumulative_tokens'] = self.knowledge_used['Tokens'].cumsum()
+        self.knowledge_used['Cumulative_tokens'] += question_tokens  # add the initial number of tokens
+        self.knowledge_used = self.knowledge_used.loc[self.knowledge_used['Cumulative_tokens'] < self.token_limit]
+
+        # Construct output
+        combined_knowledge_string = ''.join(list(self.knowledge_used['Content']))
+        combined_knowledge_string = '\n\n' + combined_knowledge_string
+        return combined_knowledge_string
 
     def show_source_message(self, answer_index: int = None) -> str:
         """
@@ -273,7 +292,6 @@ class Query:
             cls,
             query_text: str,
             chatbot_instance: ChatBot,
-            hf_reference: str,
             show_source: bool = True,
     ) -> str:
         """
@@ -281,16 +299,16 @@ class Query:
         """
 
         query = cls(query_text, chatbot_instance)
-        # query.get_gpt_message(chatbot_instance.chatbot_topic)
+        if chatbot_instance.hf_reference == MLM_HF_REFERENCE:
+            input_ids = chatbot_instance.tokeniser(query.content, return_tensors="pt").input_ids
+        else:
+            context = query.get_finetuned_context(chatbot_instance=chatbot_instance)
+            input_ids = chatbot_instance.tokeniser(context, query.content, return_tensors="pt").input_ids
 
-        finetuned_model = AutoModelForSeq2SeqLM.from_pretrained(hf_reference)
-        finetuned_tokeniser = AutoTokenizer.from_pretrained(hf_reference)
-
-        input_ids = finetuned_tokeniser(context, query.content, return_tensors="pt").input_ids
-        outputs = finetuned_model.generate(input_ids)
+        outputs = chatbot_instance.model.generate(input_ids)
 
         # Obtain model response
-        response = finetuned_tokeniser.decode(outputs[0], skip_special_tokens=True)
+        response = chatbot_instance.tokeniser.decode(outputs[0], skip_special_tokens=True)
         response_message = response if response != '' else ANSWER_NOT_FOUND_MSG
 
         # Format output

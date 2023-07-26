@@ -4,7 +4,8 @@ from config import *
 class TrainingData:
     def __init__(self,
                  save_dir: str,
-                 load_dir: str = '/content/drive/MyDrive/Diss/Output'
+                 tokeniser: AutoTokenizer.from_pretrained,
+                 load_dir: str = '/content/drive/MyDrive/Diss/Output',
                  ):
         self.seed = 9  # For only keeping a subset of unanswerable questions
         self.prop = 0.3  # desired proportion of NO_ANS in final dataset
@@ -13,6 +14,7 @@ class TrainingData:
         self.min_tokens = 100
         self.max_tokens = 1024 if tokeniser.model_max_length > 1024 else tokeniser.model_max_length
         self.save_dir = save_dir
+        self.tokeniser = tokeniser
 
         # Import data
         log_and_print_message('Loading data ready for preprocessing')
@@ -87,17 +89,16 @@ class TrainingData:
         })
         return dataset
 
-    @staticmethod
-    def tokenise(data):
+    def tokenise(self, data):
         """
         Tokenises the question/context and answers for a DatasetDict object
         """
 
         # tokenize the inputs (questions and contexts)
-        additional_cols = tokeniser(data['content'], data['question'], truncation=False)
+        additional_cols = self.tokeniser(data['content'], data['question'], truncation=False)
 
         # tokenize the answers
-        targets = tokeniser(text_target=data['answer'], truncation=False)
+        targets = self.tokeniser(text_target=data['answer'], truncation=False)
 
         # set labels
         additional_cols['labels'] = targets['input_ids']

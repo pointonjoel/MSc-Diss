@@ -1,4 +1,5 @@
 from config import GPT_TOKENISER, T5_TOKENISER, BART_TOKENISER, GPT_EMBEDDING_MODEL, ModelNotSupportedError, openai
+from config import GENERAL_TOKENISER
 
 
 # Used throughout
@@ -6,7 +7,7 @@ from config import GPT_TOKENISER, T5_TOKENISER, BART_TOKENISER, GPT_EMBEDDING_MO
 
 def num_tokens(
         text: str,
-        token_model  # = GPT_TOKENISER
+        token_model
 ) -> int:
     """
     Returns the number of tokens in a string.
@@ -17,12 +18,17 @@ def num_tokens(
         return len(token_model.tokenize(text))
     elif token_model == BART_TOKENISER:
         return len(token_model.tokenize(text))
+    elif token_model == GENERAL_TOKENISER:
+        return GENERAL_TOKENISER(text, return_tensors='pt').input_ids.shape[1]
     else:
-        raise ModelNotSupportedError('The model type isn\'t currently supported. Please select from GPT, T5 and '
-                                     'BART.')
+        try:  # Likely to be a custom finetuned tokeniser
+            return token_model(text, return_tensors='pt').input_ids.shape[1]
+        except:
+            raise ModelNotSupportedError('The model type isn\'t currently supported. Please select from GPT, T5 and '
+                                         'BART, or use a finetuned tokeniser.')
 
 
-def get_embedding(content: list or str, embedding_model: str = GPT_EMBEDDING_MODEL):
+def get_embedding(content: list or str, embedding_model):
     """
         Returns the embedding of a string given an embedding model.
     """
