@@ -4,11 +4,11 @@ from config import SECTIONS_TO_IGNORE, DocTypeNotFoundError, wikipedia, log_and_
 
 
 class Knowledge:
-    def __init__(self, chatbot_topic: str):
+    def __init__(self, chatbot_topic: str, gpt: bool = False):
         self.chatbot_topic: str = chatbot_topic  # The chatbot domain, used to export the knowledge as a csv file
-        # self.model_family: str = model_family  # The model type, used to detect the tokeniser
-        self.token_model = GENERAL_TOKENISER  # Used to calculate the number of tokens per section
-        self.embedding_model: str = GENERAL_EMBEDDING_MODEL  # Needs to be consistent with the query embedding model
+        self.gpt: bool = gpt  # The model type, used to detect the tokeniser
+        self.token_model = self.get_tokeniser_model()  # Used to calculate the number of tokens per section
+        self.embedding_model: str = self.get_embedding_model()  # Needs to be consistent with the query embedding model
         self.df: pd.DataFrame = self.get_blank_knowledge_df()  # need to add code to remove small sections (<16 chars?)
         self.max_tokens: int = self.get_max_tokens()  # max number of tokens per section
         self.min_section_length: int = MIN_LENGTH  # min character length for each section
@@ -30,11 +30,15 @@ class Knowledge:
         elif self.embedding_model == GENERAL_EMBEDDING_MODEL:
             return GENERAL_EMBEDDING_MODEL.max_seq_length
         else:
-            raise ModelNotSupportedError('The EMBEDDING model type isn\'t currently supported. Please select from GPT, T5 and '
-                                         'BART.')
+            raise ModelNotSupportedError(
+                'The EMBEDDING model type isn\'t currently supported. Please select from GPT, T5 and '
+                'BART.')
 
-    # def get_embedding_model(self):
-    #     return GPT_EMBEDDING_MODEL if self.model_family == 'GPT' else GENERAL_EMBEDDING_MODEL
+    def get_tokeniser_model(self):
+        return GENERAL_TOKENISER  # GPT_TOKENISER if self.gpt else GENERAL_TOKENISER
+
+    def get_embedding_model(self):
+        return GPT_EMBEDDING_MODEL if self.gpt else GENERAL_EMBEDDING_MODEL
 
     @staticmethod
     def get_blank_knowledge_df() -> pd.DataFrame:
@@ -215,13 +219,15 @@ class Knowledge:
                     for string in text:
                         item_to_append = {'Source': section['Source'], 'Heading': section['Heading'],
                                           'Subheading': section['Subheading'], 'Content': string,
-                                          'Section': section['Section'], 'Tokens': num_tokens(string, token_model=self.token_model)}
+                                          'Section': section['Section'],
+                                          'Tokens': num_tokens(string, token_model=self.token_model)}
 
                         new_dict_of_shorter_sections.append(item_to_append)
                 else:
                     item_to_append = {'Source': section['Source'], 'Heading': section['Heading'],
                                       'Subheading': section['Subheading'], 'Content': text[0],
-                                      'Section': section['Section'], 'Tokens': num_tokens(text[0], token_model=self.token_model)}
+                                      'Section': section['Section'],
+                                      'Tokens': num_tokens(text[0], token_model=self.token_model)}
                     # we shouldn't have this because the text should be more than the acceptable number of tokens
                     new_dict_of_shorter_sections.append(item_to_append)
         return pd.DataFrame(new_dict_of_shorter_sections)
@@ -233,20 +239,23 @@ class Knowledge:
         # Append '\n' to the start if it doesn't already have one
         knowledge.loc[~knowledge['Content'].str.startswith('\n'), 'Content'] = '\n' + knowledge.loc[
             ~knowledge['Content'].str.startswith('\n'), 'Content']
+        knowledge['Tokens'] = knowledge["Content"].apply(lambda x: num_tokens(x, token_model=self.token_model))
 
         # Get embeddings
-        # if self.model_family == 'GPT':
-        #     response = get_embedding(list(knowledge['Content']), embedding_model=self.embedding_model)
-        #     for i, be in enumerate(response["data"]):
-        #         assert i == be["index"]  # double check embeddings are in same order as input
-        #     batch_embeddings = [e["embedding"] for e in response["data"]]
-        #     knowledge['Embedding'] = batch_embeddings
-        knowledge['Tokens'] = knowledge["Content"].apply(lambda x: num_tokens(x, token_model=self.token_model))
+        if self.gpt:
+            response = get_embedding(list(knowledge['Content']), embedding_model=self.embedding_model)
+            for i, be in enumerate(response["data"]):
+                assert i == be["index"]  # double check embeddings are in same order as input
+            batch_embeddings = [e["embedding"] for e in response["data"]]
+            knowledge['Embedding'] = batch_embeddings
+        else:
+            knowledge['Embedding'] = get_embedding(list(knowledge['Content']),
+                                                   embedding_model=self.embedding_model).tolist()
         # embedding_list = []
         # for paragraph in tqdm(list(knowledge['Content'])):
         #     new_embedding = get_embedding(paragraph, embedding_model=self.embedding_model)
         #     embedding_list.append(new_embedding)
-        knowledge['Embedding'] = get_embedding(list(knowledge['Content']), embedding_model=self.embedding_model).tolist()
+
         # [get_embedding(paragraph, embedding_model=self.embedding_model) for paragraph in list(knowledge['Content'])]
         return knowledge
 
@@ -357,7 +366,8 @@ class Knowledge:
         for i in range(len(section_texts)):
             if num_tokens(section_texts[i], token_model=self.token_model) <= self.max_tokens:
                 merged_text = merged_texts[-1] + section_texts[i]
-                if num_tokens(merged_text, token_model=self.token_model) <= self.max_tokens:  # i.e. we can merge the text without it being too long
+                if num_tokens(merged_text,
+                              token_model=self.token_model) <= self.max_tokens:  # i.e. we can merge the text without it being too long
                     merged_texts[-1] = merged_text  # Update the latest line with the merged text
                     if len(merged_page_numbers) == 0:  # i.e. the 1st piece of text
                         merged_page_numbers.append([page_numbers[i]])
@@ -394,5 +404,7 @@ class Knowledge:
         """
         Saves the knowledge df to a CSV file.
         """
-
-        self.df.to_csv(f'assets/{self.chatbot_topic}_knowledge.csv', index=False)
+        if self.gpt:
+            self.df.to_csv(f'assets/{self.chatbot_topic}_knowledge_gpt.csv', index=False)
+        else:
+            self.df.to_csv(f'assets/{self.chatbot_topic}_knowledge.csv', index=False)

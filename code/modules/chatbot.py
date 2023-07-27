@@ -2,10 +2,11 @@ from config import *
 
 
 class ChatBot:
-    def __init__(self, chatbot_topic: str, hf_reference: str = None):
+    def __init__(self, chatbot_topic: str, hf_reference: str = None, embedding: str = None):
         self.chatbot_topic = chatbot_topic
         self.knowledge = None
         self.hf_reference = hf_reference
+        self.embedding_model = GPT_EMBEDDING_MODEL if embedding == 'gpt' else GENERAL_EMBEDDING_MODEL
         self.model = self.get_model()  # If None then the GPT model will be used
         self.tokeniser = self.get_tokeniser()  # If None then the GPT tokeniser will be used
         self.load_data()
@@ -16,7 +17,10 @@ class ChatBot:
         """
 
         # load data from csv
-        self.knowledge = pd.read_csv(f'assets/{self.chatbot_topic}_knowledge.csv')
+        if self.embedding_model == GPT_EMBEDDING_MODEL:
+            self.knowledge = pd.read_csv(f'assets/{self.chatbot_topic}_knowledge_gpt.csv')
+        else:
+            self.knowledge = pd.read_csv(f'assets/{self.chatbot_topic}_knowledge.csv')
         # convert embeddings from CSV str type back to list type
         self.knowledge['Embedding'] = self.knowledge['Embedding'].apply(ast.literal_eval)
 

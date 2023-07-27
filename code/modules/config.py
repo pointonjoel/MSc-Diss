@@ -78,11 +78,10 @@ GPT_TOKENISER = tiktoken.encoding_for_model(GPT_MODEL)
 T5_TOKENISER = AutoTokenizer.from_pretrained(T5_QA_GPT_HF_REFERENCE)
 BART_TOKENISER = AutoTokenizer.from_pretrained(BART_QA_GPT_HF_REFERENCE)
 # BART_ENCODING = BartTokenizer.from_pretrained(BART_MODEL)
-GPT_MAX_SECTION_TOKENS = 1600  # max number of tokens per section
-T5_MAX_SECTION_TOKENS = 1024  # max number of tokens per section
-BART_MAX_SECTION_TOKENS = 1024  # max number of tokens per section
+GPT_MAX_SECTION_TOKENS = 800  # max number of tokens per section - GPT can handle more but most models are smaller
+# limited to 1024, and it allows 50 for the question
 GPT_QUERY_TOKEN_LIMIT = 4096 - 500  # Allows 500 for the response
-BERT_MAX_SECTION_TOKENS = 460  # max tokens per section, allowing
+GENERAL_QUERY_TOKEN_LIMIT = 1024  # max number of tokens per section
 # Need to include a check to ensure that the section length is less than the query length (plus the preamble for GPT)
 MIN_LENGTH = 50  # min CHARACTER length for each section
 SEED = 9  # For reproducibility of model training

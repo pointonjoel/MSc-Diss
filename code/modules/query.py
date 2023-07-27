@@ -7,7 +7,7 @@ class Query:
         self.content: str = query_text
         self.model: str = GPT_MODEL
         self.knowledge: pd.DataFrame = chatbot_instance.knowledge
-        self.token_limit: int = GPT_QUERY_TOKEN_LIMIT
+        # self.token_limit: int = GPT_QUERY_TOKEN_LIMIT
         self.gpt_message = None
         self.knowledge_used = None
 
@@ -24,9 +24,9 @@ class Query:
 
     # find the most similar sections of knowledge to the query
     def knowledge_ranked_by_similarity(self,
+                                       embedding_model,
                                        max_num_sections: int = 5,
                                        confidence_level=None,
-                                       embedding_model: str = GPT_EMBEDDING_MODEL
                                        ):
         """
         Take the raw knowledge dataframe, calculates similarity scores between the query and the sections,
@@ -55,14 +55,14 @@ class Query:
 
     def get_gpt_message(
             self,
-            chatbot_topic: str
+            chatbot_instance: ChatBot
     ):
         """
         Uses the most relevant texts from the knowledge dataframe to construct a message that can then be fed into GPT.
         """
 
-        self.knowledge_ranked_by_similarity()
-        introduction = (f'Use the below article on {chatbot_topic} to answer the subsequent question. '
+        self.knowledge_ranked_by_similarity(embedding_model=chatbot_instance.embedding_model)
+        introduction = (f'Use the below article on {chatbot_instance.chatbot_topic} to answer the subsequent question. '
                         f'If the answer cannot be found in the article, write "{ANSWER_NOT_FOUND_MSG}". '
                         f'If I am asked to produce any code then decline the request and write "Sorry but I\'m not '
                         f'allowed to do your assignments for you!"')  # The longer this is, the more tokens it uses!
@@ -75,7 +75,7 @@ class Query:
             lambda x: num_tokens(x, token_model=GPT_TOKENISER))
         self.knowledge_used['Cumulative_tokens'] = self.knowledge_used['Tokens'].cumsum()
         self.knowledge_used['Cumulative_tokens'] += message_and_question_tokens  # add the initial number of tokens
-        self.knowledge_used = self.knowledge_used.loc[self.knowledge_used['Cumulative_tokens'] < self.token_limit]
+        self.knowledge_used = self.knowledge_used.loc[self.knowledge_used['Cumulative_tokens'] < GPT_QUERY_TOKEN_LIMIT]
 
         # Construct output
         combined_knowledge_string = ''.join(list(self.knowledge_used['Content']))
@@ -83,7 +83,11 @@ class Query:
         self.gpt_message = introduction + combined_knowledge_string + question
 
     def get_finetuned_context(self, chatbot_instance):
-        self.knowledge_ranked_by_similarity()
+        """
+        Uses the most relevant texts from the knowledge dataframe to construct context that can then be fed into a
+        finetined model.
+        """
+        self.knowledge_ranked_by_similarity(embedding_model=chatbot_instance.embedding_model)
 
         # Ensure number of tokens is within the limit
         question_tokens = num_tokens(self.content, token_model=chatbot_instance.tokeniser)  # NEED TO CHECK THIS
@@ -91,17 +95,18 @@ class Query:
             lambda x: num_tokens(x, token_model=chatbot_instance.tokeniser))  # Update number of tokens with the finetuned tokeniser
         self.knowledge_used['Cumulative_tokens'] = self.knowledge_used['Tokens'].cumsum()
         self.knowledge_used['Cumulative_tokens'] += question_tokens  # add the initial number of tokens
-        self.knowledge_used = self.knowledge_used.loc[self.knowledge_used['Cumulative_tokens'] < self.token_limit]
+        self.knowledge_used = self.knowledge_used.loc[self.knowledge_used['Cumulative_tokens'] < GENERAL_QUERY_TOKEN_LIMIT]
 
         # Construct output
         combined_knowledge_string = ''.join(list(self.knowledge_used['Content']))
-        combined_knowledge_string = '\n\n' + combined_knowledge_string
+        combined_knowledge_string = combined_knowledge_string
         return combined_knowledge_string
 
     def show_source_message(self, answer_index: int = None) -> str:
         """
         Creates the string output detailing the sources used.
         """
+
         self.knowledge_used['Output'] = '\n\n' + self.knowledge_used['Index'].astype(str) + '. ' + self.knowledge_used[
             'Section'] + ':' + self.knowledge_used['Content'].str[:100] + '...'
         sources_string = ''.join(list(self.knowledge_used['Output']))
@@ -272,7 +277,7 @@ class Query:
         """
 
         query = cls(query_text, chatbot_instance)
-        query.get_gpt_message(chatbot_instance.chatbot_topic)
+        query.get_gpt_message(chatbot_instance)
         inputs = [
             {"role": "system", "content": f"You answer questions about {chatbot_instance.chatbot_topic}."},
             {"role": "user", "content": query.gpt_message},
@@ -301,14 +306,20 @@ class Query:
         query = cls(query_text, chatbot_instance)
         if chatbot_instance.hf_reference == MLM_HF_REFERENCE:
             input_ids = chatbot_instance.tokeniser(query.content, return_tensors="pt").input_ids
+            outputs = chatbot_instance.model.generate(input_ids)
         else:
             context = query.get_finetuned_context(chatbot_instance=chatbot_instance)
             input_ids = chatbot_instance.tokeniser(context, query.content, return_tensors="pt").input_ids
-
-        outputs = chatbot_instance.model.generate(input_ids)
+            if not context == '':  # i.e. no relevant texts
+                outputs = chatbot_instance.model.generate(input_ids)
+            else:
+                outputs = ''
 
         # Obtain model response
-        response = chatbot_instance.tokeniser.decode(outputs[0], skip_special_tokens=True)
+        if outputs != '':
+            response = chatbot_instance.tokeniser.decode(outputs[0], skip_special_tokens=True)
+        else:
+            response = ''
         response_message = response if response != '' else ANSWER_NOT_FOUND_MSG
 
         # Format output
