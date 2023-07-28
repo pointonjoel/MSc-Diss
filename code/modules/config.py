@@ -47,6 +47,7 @@ import time  # For batch querying GPT API
 from transformers import set_seed  # For loading models from a seed
 from transformers import pipeline  # For using models on the HF hub
 from transformers import EarlyStoppingCallback  # To prevent overfitting of a model
+import textwrap  # For pretty printing long strings
 pd.options.mode.chained_assignment = None
 
 # Logging and GPU setup
