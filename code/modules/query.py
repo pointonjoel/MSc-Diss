@@ -82,17 +82,19 @@ class Query:
         combined_knowledge_string = '\n\n' + combined_knowledge_string
         self.gpt_message = introduction + combined_knowledge_string + question
 
-    def get_finetuned_context(self, chatbot_instance):
+    def get_finetuned_context(self, chatbot_instance: ChatBot, confidence_level: float = 0.7):
         """
         Uses the most relevant texts from the knowledge dataframe to construct context that can then be fed into a
         finetined model.
         """
-        self.knowledge_ranked_by_similarity(embedding_model=chatbot_instance.embedding_model)
+        self.knowledge_ranked_by_similarity(embedding_model=chatbot_instance.embedding_model,
+                                            confidence_level=confidence_level)
 
         # Ensure number of tokens is within the limit
         question_tokens = num_tokens(self.content, token_model=chatbot_instance.tokeniser)  # NEED TO CHECK THIS
         self.knowledge_used['Tokens'] = self.knowledge_used["Content"].apply(
-            lambda x: num_tokens(x, token_model=chatbot_instance.tokeniser))  # Update number of tokens with the finetuned tokeniser
+            lambda x: num_tokens(x, token_model=chatbot_instance.tokeniser)
+        )  # Update number of tokens with the finetuned tokeniser
         self.knowledge_used['Cumulative_tokens'] = self.knowledge_used['Tokens'].cumsum()
         self.knowledge_used['Cumulative_tokens'] += question_tokens  # add the initial number of tokens
         self.knowledge_used = self.knowledge_used.loc[self.knowledge_used['Cumulative_tokens'] < GENERAL_QUERY_TOKEN_LIMIT]
@@ -298,6 +300,7 @@ class Query:
             query_text: str,
             chatbot_instance: ChatBot,
             show_source: bool = True,
+            confidence_level: float = 0.7,
     ) -> str:
         """
         Uses GPT to answer a query based on the most relevant knowledge sections.
@@ -308,7 +311,7 @@ class Query:
             input_ids = chatbot_instance.tokeniser(query.content, return_tensors="pt").input_ids
             outputs = chatbot_instance.model.generate(input_ids)
         else:
-            context = query.get_finetuned_context(chatbot_instance=chatbot_instance)
+            context = query.get_finetuned_context(chatbot_instance=chatbot_instance, confidence_level=confidence_level)
             input_ids = chatbot_instance.tokeniser(context, query.content, return_tensors="pt").input_ids
             if not context == '':  # i.e. no relevant texts
                 outputs = chatbot_instance.model.generate(input_ids)
