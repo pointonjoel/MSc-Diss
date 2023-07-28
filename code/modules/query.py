@@ -314,7 +314,7 @@ class Query:
             context = query.get_finetuned_context(chatbot_instance=chatbot_instance, confidence_level=confidence_level)
             input_ids = chatbot_instance.tokeniser(context, query.content, return_tensors="pt").input_ids
             if not context == '':  # i.e. no relevant texts
-                outputs = chatbot_instance.model.generate(input_ids)
+                outputs = chatbot_instance.model.generate(input_ids, max_new_tokens=150)
             else:
                 outputs = ''
 
