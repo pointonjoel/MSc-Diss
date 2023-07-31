@@ -1,0 +1,60 @@
+\hypersetup{pdfpagemode=FullScreen}
+\usetheme[progressbar=frametitle]{Berlin}
+\definecolor{mainblue}{RGB}{16,38,59}
+\colorlet{grey}{mainblue!30!white!70}
+\definecolor{secondblue}{RGB}{0,155,193}
+\definecolor{gold}{RGB}{222,180,6}
+\definecolor{nottsred}{RGB}{185,28,46}
+\definecolor{stone}{RGB}{250,246,239}
+\usecolortheme[]{beaver}
+\setbeamercolor{palette primary}{bg=grey,fg=white} % main title
+\setbeamercolor{frametitle}{fg=nottsred,bg=grey} % slide titles
+\setbeamercolor{palette secondary}{bg=secondblue,fg=white} % bar at the top
+\setbeamercolor{palette tertiary}{bg=mainblue,fg=white} % bar at the top
+\setbeamercolor{palette quaternary}{bg=green,fg=white} % nada
+\setbeamercolor{structure}{fg=nottsred} % itemize, enumerate, etc
+\setbeamercolor{section in toc}{fg=black} % TOC sections
+
+% Override palette coloring with secondary
+\setbeamercolor{subsection in head/foot}{bg=secondblue,fg=white}
+
+
+\setbeamertemplate{frame numbering}[none]
+%\useinnertheme{berlin}
+\usepackage{multicol} %for multiple columns
+\setbeamercovered{transparent=15} %for the other columns to be transparent
+%edit this...
+% \setbeamercolor{progress bar}{fg=gold,bg=gold}
+% \setbeamercolor{progress bar in head/foot}{fg=gold,bg=gold}
+% \setbeamercolor{progress bar in section page}{fg=mainblue,bg=mainblue}
+% \setbeamercolor{frametitle}{fg=white,bg=mainblue}
+% \setbeamercolor{block title}{use=structure,fg=white,bg=mainblue}
+% \setbeamercolor{block body}{use=structure,fg=white,bg=mainblue}
+\hypersetup{colorlinks,linkcolor=,urlcolor=gold}
+
+\usepackage{docmute}
+\makeatletter
+\newcommand*{\loadpresentation}[1]{{\beamer@inlecturefalse\input{#1}}}
+\makeatother
+
+\setbeamertemplate{itemize items}[circle]
+\setbeamertemplate{itemize subitem}[ball]
+\setbeamertemplate{itemize subsubitem}[square]
+\setbeamertemplate{page number in head/foot}{\insertframenumber /12}
+
+\makeatletter
+%\setlength{\metropolis@titleseparator@linewidth}{2pt}
+%\setlength{\metropolis@progressonsectionpage@linewidth}{2pt}
+%\setlength{\metropolis@progressinheadfoot@linewidth}{2pt}
+\makeatother
+\setbeamercolor{background canvas}{bg=white}
+
+\usepackage{pdfpages}
+\usepackage[absolute,overlay]{textpos}
+\usepackage{graphicx}
+\usepackage{graphics}
+\usepackage{amsmath}
+\usepackage{multicol}
+\usepackage{pgfplots} %to make graphs
+\usepackage{tikz} %to create tikz stuff
+\usepackage{csquotes} %for the quotation marks

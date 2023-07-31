@@ -1,0 +1,145 @@
+\documentclass{article}
+\usepackage[margin=2.9cm]{geometry} % Adjust the margin size here
+\usepackage{graphicx}
+% \usepackage{multirow}
+\usepackage{tabularx}
+\usepackage{hyperref}
+\usepackage{csquotes}
+\usepackage{parnotes}
+\usepackage{natbib} % for bibliography
+\usepackage{listings} % for code
+\usepackage{tablefootnote}
+\usepackage{xcolor}
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+% \usepackage{footnote}
+\lstdefinestyle{PythonStyle}{
+    language=Python,
+    basicstyle=\small\ttfamily,
+    keywordstyle=\color{magenta},
+    commentstyle=\color{codegreen},
+    stringstyle=\color{blue},
+    numbers=left,
+    numberstyle=\tiny\color{purple},
+    stepnumber=1,
+    frame=single,
+    breaklines=true,
+    breakatwhitespace=false,
+    tabsize=4,
+    showspaces=false,
+    showstringspaces=false
+}
+\newenvironment{itquote}
+  {\begin{displayquote}\itshape}
+  {\end{displayquote}\ignorespacesafterend}
+
+
+\title{\vspace{-1.3cm}Summary Results}
+\author{Joel Pointon}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+\section{Fine-Tuned T5}
+Fine-tuning a model using a question answering dataset achieves the following results:
+\begin{table}[!ht]
+    \centering
+    \begin{tabular}{|l|l|l|l|l|l|l|l|l|l|l|}
+    \hline
+        Train Loss & Val Loss & Rouge1 & Rouge2 & Rougel & Rougelsum & Bleu & Gen Len & Meteor & Non-ans acc \\ \hline
+        1.3849 & 1.0848 & 41.527 & 33.324 & 38.4866 & 38.4856 & 29.906 & 17.1296 & 0.377 & 1.9\% \\ \hline
+    \end{tabular}
+\end{table}
+
+As can be seen above, after 19 epochs of training, both the training and validation loss are very low. Furthermore, the model achieves excellent results using Rouge, Bleu and Meteor scores. Rouge scores are by nature difficult to compare, as the vocabulary and context vary each application. However, we can say that around 42\% words in the target answer were included in the generated answer (rouge1). Additionally, model still performs well when comparing bigram overlap (rouge2). The model also scores highly using the Bleu score and Meteor score, which are more complex than a Rouge score, but similarly compare the accuracy of the generated text to the target answer.
+
+However, even with 30\% unanswerable questions, the model still struggles to identify unanswerable questions, with only 2\% being correctly identified. Additionally, the model appears to be underfitting, as opposed to overfitting to the data. This is shown by the training loss being higher than the validation loss. Therefore, there is scope to use regularisation to improve model performance. This is currently being attempted and hopefully be implemented in the final model.
+
+\subsection{Usage}
+The above performance metrics are promising, however, these are difficult to interpret, and so the output from testing the model will provide the greatest insights.
+
+Below is the output from asking the model: What is PCA?
+\begin{itquote}
+    The PCA is used to approximate the face.
+    
+    To construct this answer, I used the following documents: 
+    \begin{enumerate}
+        \item Fundamentals\_of\_Digital\_Image\_Processing\_Textbook->Page(s)278/279/280/281:
+    When we carry out a PCA on this ensemble of faces, we find that the eigenvalue spectrum
+    dies off qu...
+    \end{enumerate}
+\end{itquote}
+
+While the framework has correctly identified one of the most important sections in the textbook, the model has failed to understand the intention of the question (to give a meaning of the acronym and a short description) and extract the correct answer.
+
+Rewriting the question in alternative manner yields an improved but still unsatisfactory answer: What is Principal Component Analysis?
+\begin{itquote}
+    The Principal Component Analysis is calculated on a pixel-to- pixel basis.
+    
+    To construct this answer, I used the following documents : 
+    \begin{enumerate}
+        \item Fundamentals\_of\_Digital\_Image\_Processing\_Textbook->Page(s)274/275:
+    Depending on the precise context, there may be several closely related reasons for doing
+    PCA, but t...
+    \end{enumerate}
+\end{itquote}
+
+This time the model has extracted an accurate statement within the text on pages 274/275: "one possible approach to PCA the covariance is calculated on a pixel-to-pixel basis...". However, it has failed to provide a satisfactory description of what Principal Component Analysis actually is.
+
+A more simple question can be asked: What are true-colour images?
+\begin{itquote}
+    The true-colour images are three distinct 2-D planes.
+
+    To construct this answer, I used the following documents : 
+    \begin{enumerate}
+        \item Fundamentals\_of\_Digital\_Image\_Processing\_Textbook->Page(s)28/29:
+RGB (or true colour) images are 3-D arrays that we may consider conceptually as three
+distinct 2-D ...
+    \end{enumerate}
+\end{itquote}
+
+This answer demonstrates the potential of such a model - it has correctly identified the answer and provided a succinct response. Such answers are possible by the model, but aren't consistently provided.
+
+Finally, we can also see the model's inability to detect unanswerable questions. For example, when asked: Who is Joel?, it responds:
+\begin{itquote}
+    The Joel is Chris Solomon.
+\end{itquote}
+
+Unfortunately, it has identified that both Joel and Chris Solomon are people, but has not understood that the there is not an answer to such a question in the textbook provided.
+
+\section{GPT-3.5-turbo}
+To benchmark these responses against an alternative, \acrfull{sota} model, we can ask the same questions to GPT-3.5-turbo and provide the same context to the model. Asking the model, What is PCA? yields the following response:
+\begin{itquote}
+    PCA stands for Principal Component Analysis. It is a statistical technique used for dimensionality reduction and data compression. PCA identifies the most important features or components in a dataset and represents the data in a new coordinate system defined by these components. It is commonly used in computer vision for tasks such as face recognition and image compression.
+    
+    To construct this answer, I used the following documents : 
+       
+    \begin{enumerate}
+        \item Fundamentals\_of\_Digital\_Image\_Processing\_Textbook->Page(s)278/279/280/281:
+    When we carry out a PCA on this ensemble of faces, we find that the eigenvalue spectrum
+    dies off qu...
+        \item Fundamentals\_of\_Digital\_Image\_Processing\_Textbook->Page(s)274/275:
+    Depending on the precise context, there may be several closely related reasons for doing
+    PCA, but t...
+    \end{enumerate}
+\end{itquote}
+
+As can be seen, the model is given the similar sources (2 rather than 1, as it can process more tokens), and succinctly provides an accurate answer using the sources, and is grounded in the context of computer vision. Additionally, when asked "Who is Joel?", the model responds appropriately:
+
+\begin{itquote}
+    I could not find an answer in the text I've been provided, sorry! Please try again.
+\end{itquote}
+
+
+\section{Summary}
+Clearly the \acrshort{sota} \acrshort{api} managed by OpenAI can produce far superior answers. While the fine-tuned T5 model produces excellent numerical outcomes, actual output from the model lacks substance and demonstrates a failure to fully understand the question. These outcomes are not inconsistent and show that there is a need to use a similarity measure which compares the semantic meaning of sentences (e.g. cosine similarity) rather than a simple overlap of words (unigram, bigram etc).
+
+However, there are ways to improve the fine-tuned T5 model further. Firstly, a confidence level can be implemented so that the model is only able to respond if the textbook has a highly relevant section. This can be achieved by providing a cosine similarity cutoff. Secondly, the model can be improved by using regularisation techniques and by providing more training examples. This can reduce the impact of underfitting and enable to model to learn further.
+
+The framework presented by this paper offers promising results and potential for training a long-form, closed-domain question-answering chatbot which has not yet been directly attempted by the literature. I offer a novel dataset of naturally worded questions with succinct answers written in natural-language to contribute to the literature. By improving and adding to this dataset, such models can be improved further. This framework can very easily be used in a variety of contexts, as the model is trained to answer questions from a context, rather than be an expert in a specific domain, and is open-source so is completely free. 
+
+
+\end{document}
