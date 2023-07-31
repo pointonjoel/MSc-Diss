@@ -64,7 +64,7 @@ class Query:
         self.knowledge_ranked_by_similarity(embedding_model=chatbot_instance.embedding_model)
         introduction = (f'Use the below article on {chatbot_instance.chatbot_topic} to answer the subsequent question. '
                         f'If the answer cannot be found in the article, write "{ANSWER_NOT_FOUND_MSG}". '
-                        f'If I am asked to produce any code then decline the request and write "Sorry but I\'m not '
+                        f'If you are asked to produce any code then decline the request and write "Sorry but I\'m not '
                         f'allowed to do your assignments for you!"')  # The longer this is, the more tokens it uses!
         question = f"\n\nQuestion: {self.content}"
 
