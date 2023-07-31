@@ -1,0 +1,48 @@
+\chapter{Results}
+% Explaining how your software was tested (using different datasets or in different environments), statistical evaluation of performance, results of user evaluation questionnaires, etc.
+The results of each of the three models will now be compared, discussing the qualitative answers and empirical evaluation where appropriate. The first model will be the model trained using \acrfull{mlm}, followed by the document store and gpt-3.5-turbo model, ending with the fine-tuned T5 model using the Natural Questions dataset.
+
+\section{\acrshort{mlm}}
+What is PCA?
+``PCA is an acronym for the process of encoding/ocus conversion, as opposed a form of RGB color coding. We refer to PCA as a method for the conversion of digital imagery into a digital image. PC"
+
+``PCA is an effective marker for image detection by image sensor, camera-cameraman and video transmission equipment.
+PCA, like camera-scan, marks pixels in an image, so any changes to the image"
+
+``
+PCA is an inverse inverse decomposition of a domain with a constant background and a subset of variables in which every variable can be contained.
+PCA is the objective of the classification algorithm developed for CAT. A high"
+
+
+% Rouge scores: https://huggingface.co/learn/nlp-course/chapter7/5?fw=pt
+% The rouge1 variant is the overlap of unigrams — this is just a fancy way of saying the overlap of words and is exactly the metric we’ve discussed above.
+% Great, the precision and recall numbers match up! Now what about those other ROUGE scores? rouge2 measures the overlap between bigrams (think the overlap of pairs of words), while rougeL and rougeLsum measure the longest matching sequences of words by looking for the longest common substrings in the generated and reference summaries. The “sum” in rougeLsum refers to the fact that this metric is computed over a whole summary, while rougeL is computed as the average over individual sentences.
+
+% Is this needed?
+I conclude that the choice of model depends on the value placed on the quality of human-like responses. This backs up the findings of \citet{brown2020}, who noted that using the SuperGLUE benchmark (a standardized collection of datasets), GPT-3 outperforms BERT's average of 69.0 by achieving a score of 71.8 using few-shot learning. However, their results show that GPT-3 performs relatively poorly compared to SOTA levels for SQuADv2 (69.8 vs 93.0 F1 score) and other reading comprehension tasks. This is likely due to the training methods used with GPT, which has not been fine-tuned on these datasets and is designed to generate content in response to zero- or few-shot tasks (such as conducting arithmetic or writing articles which are indistinguishable from human form), rather than provide precise answers. However, this level of performance comes at a cost.
+
+\section{Costs}\label{sec:results_costs}
+The superior performance of GPT comes at a higher cost than open-source models. As shown in Table \ref{tab:results_cost_comparison}, BERT and BART have no outright cost for usage (aside from the running costs: electricity, hardware, setup time etc.). While each query using GPT is very cheap, it is cumulatively likely to cost several hundred pounds per year for each module that uses it, which might be unattainable for several departments. Additionally, departments would need to justify that this model is sufficiently more robust, reliable, and beneficial than ChatGPT (which is currently free). Note that there is also a very small cost each time a query embedding is requested (\$0.0004/1,000 tokens), but this is negligible compared the cost of asking GPT for an answer, as the number of tokens per query is very small (<50).
+
+\begin{table}[h!]
+    \centering
+    \caption{Comparison of Estimated AI Costs}
+    \begin{tabularx}{0.8\textwidth}{p{3.5cm}|>{\raggedright\arraybackslash}X|>{\raggedright\arraybackslash}X|>{\raggedright\arraybackslash}X}
+        \hline
+        \textbf{Model} & \textbf{Cost per query\parnote{Estimated cost using based on each query using 2000 tokens}} & \textbf{Cost per student\parnote{Estimated cost using based on 100 queries per student}} & \textbf{Cost per module\parnote{Estimated cost using based on 300 students in a module}}\\
+        \hline
+        GPT: \texttt{3.5-turbo} & \$0.004 & \$0.40 & \$120\parnote{Excluding the small cost of embedding students' questions} \\
+        \hline
+        BERT: \texttt{deepset/bert-base-cased-squad2} & \$0.00 & \$0.00 & \$0 \\
+        \hline
+        BART: \texttt{vblagoje/bart\_lfqa} & \$0.00 & \$0.00 & \$0 \\
+        \hline
+    \end{tabularx}
+    \parnotes
+    % \vspace{-25pt}
+    \label{tab:results_cost_comparison}
+\end{table}
+
+All models have their merits, but GPT is easily the most impressive model, excelling at providing human-like responses, and limiting its answers to the sources provided - it's a classic case of `you get what you pay for'.
+
+Ideally would find the optimum hyperparameters (Learning rate and and weight decay) using grid search or random search, but didn't have adequate computing power to conduct this. Therefore model performance could be improved further. 

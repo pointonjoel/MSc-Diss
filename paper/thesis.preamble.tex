@@ -9,7 +9,8 @@
 \usepackage{hyperref}
 \usepackage{emoji}
 \usepackage[labelfont=bf]{caption}
-\usepackage[acronym]{glossaries}
+\usepackage{csquotes}
+\usepackage{tabularx}
 % \usepackage[acronym, toc]{glossaries}
 
 \input{paper/blocked.sty}
@@ -141,23 +142,8 @@
  \end{figure}
 }
 
-\makenoidxglossaries %\makenglossaries
-\newacronym{ai}{AI}{Artificial Intelligence}
-\newacronym{faq}{FAQ}{Frequently Asked Question}
-\newacronym{nlp}{NLP}{Natural Language Processing}
-\newacronym{llm}{LLM}{Large Language Model}
-\newacronym{cnn}{CNN}{Convolutional Neural Network}
-\newacronym{rnn}{RNN}{Recurrent Neural Network}
-\newacronym{ann}{ANN}{Artificial Neural Network}
-\newacronym{lstm}{LSTM}{Long Short-Term Memory}
-\newacronym{gru}{GRU}{Gated Recurrent Unit}
-\newacronym{relu}{ReLu}{Rectified Linear Unit}
-\newacronym{cbow}{CBOW}{Continuous Bag-of-Words}
-\newacronym{gpu}{GPU}{Graphics Processing Unit}
-\newacronym{elmo}{ELMo}{Embeddings from Language Model}
-\newacronym{bert}{BERT}{Bidirectional Encoder Representations from Transformers}
-\newacronym{bart}{BART}{Bidirectional and Auto-Regressive Transformer}
-\newacronym{gpt}{GPT}{Generative Pre-trained Transformer}
-\newacronym{sota}{SOTA}{State of the Art}
-\newacronym{glove}{GloVe}{Global Vectors for Word Representation}
-\newacronym{squad}{SQuAD}{Stanford Question Answering Dataset}
+\newenvironment{itquote}
+  {\begin{displayquote}\itshape}
+  {\end{displayquote}\ignorespacesafterend}
+
+\input{paper/acronyms}
