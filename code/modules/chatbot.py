@@ -30,7 +30,10 @@ class ChatBot:
         """
 
         if self.hf_reference:
-            return AutoModelForSeq2SeqLM.from_pretrained(self.hf_reference)
+            if self.hf_reference == MLM_HF_REFERENCE:
+                return GPT2LMHeadModel.from_pretrained(self.hf_reference)
+            else:
+                return AutoModelForSeq2SeqLM.from_pretrained(self.hf_reference)
         else:
             return
 
@@ -38,8 +41,10 @@ class ChatBot:
         """
         Loads the finetuned tokeniser if appropriate
         """
-
         if self.hf_reference:
-            return AutoTokenizer.from_pretrained(self.hf_reference)
+            if self.hf_reference == MLM_HF_REFERENCE:
+                return GPT2Tokenizer.from_pretrained(self.hf_reference)
+            else:
+                return AutoTokenizer.from_pretrained(self.hf_reference)
         else:
             return
