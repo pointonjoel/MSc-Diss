@@ -5,7 +5,7 @@ from embedding_functions import *
 class Query:
     def __init__(self, query_text: str, chatbot_instance: ChatBot):
         self.content: str = query_text
-        # self.model: str = GPT_MODEL
+        self.model: str = GPT_MODEL
         self.knowledge: pd.DataFrame = chatbot_instance.knowledge
         # self.token_limit: int = GPT_QUERY_TOKEN_LIMIT
         self.gpt_message = None
