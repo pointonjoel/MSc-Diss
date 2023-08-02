@@ -310,7 +310,7 @@ class Query:
         if chatbot_instance.hf_reference == MLM_HF_REFERENCE:
             # inputs = chatbot_instance.tokeniser(query.content, return_tensors="pt").input_ids
             # outputs = chatbot_instance.model.generate(**inputs, max_new_tokens=max_new_tokens)
-            outputs = chatbot_instance.model(query.content)[0]['generated_text']
+            response = chatbot_instance.model(query.content)[0]['generated_text']
         else:
             context = query.get_finetuned_context(chatbot_instance=chatbot_instance, confidence_level=confidence_level)
             input_ids = chatbot_instance.tokeniser(context, query.content, return_tensors="pt").input_ids
@@ -320,7 +320,9 @@ class Query:
                 outputs = ''
 
         # Obtain model response
-        if outputs != '' and chatbot_instance.hf_reference != MLM_HF_REFERENCE:
+        if chatbot_instance.hf_reference != MLM_HF_REFERENCE:
+            pass
+        elif outputs != '':
             response = chatbot_instance.tokeniser.decode(outputs[0], skip_special_tokens=True)
         else:
             response = ''
