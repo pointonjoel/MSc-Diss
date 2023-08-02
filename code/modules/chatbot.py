@@ -3,9 +3,10 @@ from config import *
 
 class ChatBot:
     def __init__(self, chatbot_topic: str, hf_reference: str = None, embedding: str = None):
-        self.chatbot_topic = chatbot_topic
+        self.chatbot_topic: str = chatbot_topic
         self.knowledge = None
-        self.hf_reference = hf_reference
+        self.hf_reference: str = hf_reference
+        self.max_new_tokens: int = 150
         self.embedding_model = GPT_EMBEDDING_MODEL if embedding == 'gpt' else GENERAL_EMBEDDING_MODEL
         self.model = self.get_model()  # If None then the GPT model will be used
         self.tokeniser = self.get_tokeniser()  # If None then the GPT tokeniser will be used
@@ -31,7 +32,7 @@ class ChatBot:
 
         if self.hf_reference:
             if self.hf_reference == MLM_HF_REFERENCE:
-                return GPT2LMHeadModel.from_pretrained(self.hf_reference)
+                return pipeline(model=self.hf_reference)
             else:
                 return AutoModelForSeq2SeqLM.from_pretrained(self.hf_reference)
         else:

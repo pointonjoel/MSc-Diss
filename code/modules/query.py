@@ -5,7 +5,7 @@ from embedding_functions import *
 class Query:
     def __init__(self, query_text: str, chatbot_instance: ChatBot):
         self.content: str = query_text
-        self.model: str = GPT_MODEL
+        # self.model: str = GPT_MODEL
         self.knowledge: pd.DataFrame = chatbot_instance.knowledge
         # self.token_limit: int = GPT_QUERY_TOKEN_LIMIT
         self.gpt_message = None
@@ -301,7 +301,6 @@ class Query:
             chatbot_instance: ChatBot,
             show_source: bool = True,
             confidence_level: float = 0.7,
-            max_new_tokens: int = 150
     ) -> str:
         """
         Uses GPT to answer a query based on the most relevant knowledge sections.
@@ -309,18 +308,19 @@ class Query:
 
         query = cls(query_text, chatbot_instance)
         if chatbot_instance.hf_reference == MLM_HF_REFERENCE:
-            input_ids = chatbot_instance.tokeniser(query.content, return_tensors="pt").input_ids
-            outputs = chatbot_instance.model.generate(input_ids, max_new_tokens=max_new_tokens)
+            # inputs = chatbot_instance.tokeniser(query.content, return_tensors="pt").input_ids
+            # outputs = chatbot_instance.model.generate(**inputs, max_new_tokens=max_new_tokens)
+            outputs = chatbot_instance.model(query.content)[0]['generated_text']
         else:
             context = query.get_finetuned_context(chatbot_instance=chatbot_instance, confidence_level=confidence_level)
             input_ids = chatbot_instance.tokeniser(context, query.content, return_tensors="pt").input_ids
             if not context == '':  # i.e. no relevant texts
-                outputs = chatbot_instance.model.generate(input_ids, max_new_tokens=max_new_tokens)
+                outputs = chatbot_instance.model.generate(input_ids, max_new_tokens=chatbot_instance.max_new_tokens)
             else:
                 outputs = ''
 
         # Obtain model response
-        if outputs != '':
+        if outputs != '' and chatbot_instance.hf_reference != MLM_HF_REFERENCE:
             response = chatbot_instance.tokeniser.decode(outputs[0], skip_special_tokens=True)
         else:
             response = ''
