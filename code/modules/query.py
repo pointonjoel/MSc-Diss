@@ -326,6 +326,6 @@ class Query:
         response_message = response if response != '' else ANSWER_NOT_FOUND_MSG
 
         # Format output
-        if show_source and response_message != ANSWER_NOT_FOUND_MSG:  # Display the sources used:
+        if show_source and response_message != ANSWER_NOT_FOUND_MSG and chatbot_instance.hf_reference != MLM_HF_REFERENCE:  # Display the sources used:
             response_message += query.show_source_message()
         return response_message
