@@ -56,7 +56,7 @@ class Query:
     def get_gpt_message(
             self,
             chatbot_instance: ChatBot,
-            confidence_level: int = 0.5,
+            confidence_level: float = 0.5,
     ):
         """
         Uses the most relevant texts from the knowledge dataframe to construct a message that can then be fed into GPT.
