@@ -301,6 +301,7 @@ class Query:
             chatbot_instance: ChatBot,
             show_source: bool = True,
             confidence_level: float = 0.7,
+            max_new_tokens: int = 150
     ) -> str:
         """
         Uses GPT to answer a query based on the most relevant knowledge sections.
@@ -309,12 +310,12 @@ class Query:
         query = cls(query_text, chatbot_instance)
         if chatbot_instance.hf_reference == MLM_HF_REFERENCE:
             input_ids = chatbot_instance.tokeniser(query.content, return_tensors="pt").input_ids
-            outputs = chatbot_instance.model.generate(input_ids)
+            outputs = chatbot_instance.model.generate(input_ids, max_new_tokens=max_new_tokens)
         else:
             context = query.get_finetuned_context(chatbot_instance=chatbot_instance, confidence_level=confidence_level)
             input_ids = chatbot_instance.tokeniser(context, query.content, return_tensors="pt").input_ids
             if not context == '':  # i.e. no relevant texts
-                outputs = chatbot_instance.model.generate(input_ids, max_new_tokens=150)
+                outputs = chatbot_instance.model.generate(input_ids, max_new_tokens=max_new_tokens)
             else:
                 outputs = ''
 
