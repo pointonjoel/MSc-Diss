@@ -320,7 +320,7 @@ class Query:
                 outputs = ''
 
         # Obtain model response
-        if chatbot_instance.hf_reference != MLM_HF_REFERENCE:
+        if chatbot_instance.hf_reference == MLM_HF_REFERENCE:
             pass
         elif outputs != '':
             response = chatbot_instance.tokeniser.decode(outputs[0], skip_special_tokens=True)
