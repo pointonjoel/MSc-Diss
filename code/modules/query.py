@@ -55,13 +55,15 @@ class Query:
 
     def get_gpt_message(
             self,
-            chatbot_instance: ChatBot
+            chatbot_instance: ChatBot,
+            confidence_level: int = 0.5,
     ):
         """
         Uses the most relevant texts from the knowledge dataframe to construct a message that can then be fed into GPT.
         """
 
-        self.knowledge_ranked_by_similarity(embedding_model=chatbot_instance.embedding_model)
+        self.knowledge_ranked_by_similarity(embedding_model=chatbot_instance.embedding_model,
+                                            confidence_level=confidence_level)
         introduction = (f'Use the below article on {chatbot_instance.chatbot_topic} to answer the subsequent question. '
                         f'If the answer cannot be found in the article, write "{ANSWER_NOT_FOUND_MSG}". '
                         f'If you are asked to produce any code then decline the request and write "Sorry but I\'m not '
@@ -273,13 +275,14 @@ class Query:
             query_text: str,
             chatbot_instance: ChatBot,
             show_source: bool = True,
+            confidence_level: float = 0.5,
     ) -> str:
         """
         Uses GPT to answer a query based on the most relevant knowledge sections.
         """
 
         query = cls(query_text, chatbot_instance)
-        query.get_gpt_message(chatbot_instance)
+        query.get_gpt_message(chatbot_instance, confidence_level=confidence_level)
         inputs = [
             {"role": "system", "content": f"You answer questions about {chatbot_instance.chatbot_topic}."},
             {"role": "user", "content": query.gpt_message},
