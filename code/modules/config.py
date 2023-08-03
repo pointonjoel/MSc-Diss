@@ -89,7 +89,7 @@ GENERAL_QUERY_TOKEN_LIMIT = 1024  # max number of tokens per section
 MIN_LENGTH = 50  # min CHARACTER length for each section
 SEED = 9  # For reproducibility of model training
 set_seed(SEED)
-RPM = 60  # The RPM limit for querying GPT
+RPM = 3500  # The RPM limit for querying GPT
 NO_ANS_TOKEN = '[NO_ANS]'  # For training the QA model to detect unanswerable questions
 ANSWER_NOT_FOUND_MSG = "I could not find an answer in the text I\'ve been provided, sorry! Please try again."
 

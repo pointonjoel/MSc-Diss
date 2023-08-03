@@ -1,7 +1,11 @@
 from embedding_functions import *
 from config import GENERAL_EMBEDDING_MODEL, MIN_LENGTH, GPT_MAX_SECTION_TOKENS, pd, mwparserfromhell, GENERAL_TOKENISER
 from config import SECTIONS_TO_IGNORE, DocTypeNotFoundError, wikipedia, log_and_print_message, fitz, unidecode, re, tqdm
-
+'''
+Parts of this document were heavily adapted from the following notebooks:
+https://github.com/openai/openai-cookbook/blob/c651bfdda64ac049747c2a174cde1c946e2baf1d/examples/Embedding_Wikipedia_articles_for_search.ipynb
+https://github.com/openai/openai-cookbook/blob/main/examples/Question_answering_using_embeddings.ipynb
+'''
 
 class Knowledge:
     def __init__(self, chatbot_topic: str, gpt: bool = False):

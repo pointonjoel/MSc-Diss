@@ -40,7 +40,7 @@ def query_gpt(msg, timestamps):
             tries += 1
         except Exception as e:
             print('Major error', e)
-            time.sleep(10)
+            time.sleep(1)
             if tries > 20:
                 success = True
                 response = "error"
