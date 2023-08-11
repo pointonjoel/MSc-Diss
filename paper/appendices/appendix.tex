@@ -2,8 +2,50 @@
 
 % e.g., User Manuals, supporting evidence for claims made in the main part of the dissertation (e.g. a copy of a user evaluation questionnaire), samples of test data, etc. Note that Appendices are optional.
 
-\chapter{User Manuals}
+\chapter{\acrshort{mlm} Training Results}\label{ch:appendixA} % Appendix A
+Training results for the model in Section \ref{sec:results_mlm}. Full details including hyperparameters, virtual environment framework, and usage can be found at the Huggingface repo: \url{https://huggingface.co/psxjp5/mlm}.
 
-\chapter{User Evaluation Questionnaire}
+\begin{table}[!ht]
+\begin{adjustwidth}{-1.8cm}{}
+  \centering
+\begin{tabular}{l|l|l|l}
+        \textbf{Train Loss} & \textbf{Epoch} & \textbf{Val Loss} & \textbf{Perplexity} \\ \hline
+        12.948 & 0.99 & 5.147 & 171.9 \\ \hline
+        4.061 & 1.98 & 4.311 & 74.5 \\ \hline
+        3.713 & 2.97 & 4.081 & 59.2 \\ \hline
+        3.603 & 3.96 & 4.055 & 57.7 \\ \hline
+        3.503 & 4.94 & 4.051 & 57.5 \\ \hline
+        3.443 & 5.93 & 4.088 & 59.6 \\ \hline
+        3.397 & 6.92 & 4.071 & 58.6 \\
+    \end{tabular}
+  \caption{Full training results for fine-tuning \acrshort{gpt} using \acrlong{mlm}}
+  \label{tab:longheaders}
+\end{adjustwidth}
+\end{table}
+
+\chapter{Fine-tuned T5 Training Results}\label{ch:appendixB} % Appendix B
+Training results for the model in Section \ref{sec:results_t5}. Full details including hyperparameters, virtual environment framework, and usage can be found at the Huggingface repo: \url{https://huggingface.co/psxjp5/mt5-small}.
+
+\begin{table}[!ht]
+\begin{adjustwidth}{-1.8cm}{}
+  \centering
+  \begin{tabular}{p{0.8cm}|l|p{0.8cm}|l|l|l|p{1.1cm}|l|p{0.7cm}|l|p{1.5cm}|p{1.5cm}|p{1.2cm}}
+        \textbf{Train Loss} & \textbf{Epoch} & \textbf{Val Loss} & \textbf{Rouge1} & \textbf{Rouge2} & \textbf{Rougel} & \textbf{Rougelsum} & \textbf{Bleu} & \textbf{Gen Len} & \textbf{Meteor} & \textbf{True\newline negatives} & \textbf{False\newline negatives} & \textbf{Cosine Sim} \\ \hline
+        2.572 & 1 & 0.988 & 18.8 & 15.6 & 18.2 & 18.3 & 7.7 & 7.8 & 0.163 & 72.9\% & 56.7\% & 0.400 \\ \hline
+        1.147 & 1.99 & 0.858 & 36.8 & 31.3 & 35.5 & 35.5 & 25.7 & 12.0 & 0.331 & 62.8\% & 20.4\% & 0.665 \\ \hline
+        0.947 & 2.99 & 0.800 & 40.4 & 34.7 & 39.1 & 39.1 & 29.3 & 12.4 & 0.366 & 63.4\% & 15.3\% & 0.711 \\ \hline
+        0.813 & 3.98 & 0.773 & 42.7 & 36.7 & 41.2 & 41.3 & 32.1 & 12.9 & 0.387 & 62.2\% & 11.4\% & 0.743 \\ \hline
+        0.723 & 4.98 & 0.748 & 42.9 & 37.0 & 41.5 & 41.5 & 32.5 & 12.9 & 0.391 & 63.3\% & 11.5\% & 0.747 \\ \hline
+        0.649 & 5.97 & 0.729 & 40.3 & 35.0 & 39.1 & 39.1 & 28.8 & 11.7 & 0.367 & 73.9\% & 18.0\% & 0.707 \\ \hline
+        0.588 & 6.97 & 0.717 & 42.7 & 37.1 & 41.4 & 41.4 & 32.1 & 12.5 & 0.389 & 70.0\% & 12.8\% & 0.739 \\ \hline
+        0.541 & 7.96 & 0.739 & 44.7 & 38.8 & 43.3 & 43.3 & 34.5 & 12.9 & 0.408 & 66.3\% & 9.5\% & 0.766 \\ \hline
+        0.504 & 8.96 & 0.733 & 43.5 & 38.0 & 42.3 & 42.2 & 32.6 & 12.3 & 0.398 & 72.6\% & 12.8\% & 0.745 \\ \hline
+        0.465 & 9.95 & 0.729 & 44.4 & 38.8 & 43.1 & 43.1 & 34.2 & 12.7 & 0.405 & 69.7\% & 10.4\% & 0.763 \\
+  \end{tabular}
+  \caption{Full training results for fine-tuning T5}
+  \label{tab:longheaders}
+\end{adjustwidth}
+\end{table}
+
 
 \end{appendices}

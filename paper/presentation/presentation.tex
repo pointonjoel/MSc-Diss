@@ -2,6 +2,7 @@
 \usepackage[utf8]{inputenc}
 \usepackage{../beamer_preamble}
 \usepackage{import}
+\bibliographystyle{ecta} %for harvard
 % \setbeamertemplate{section in toc}[sections numbered]
 % \setbeamertemplate{subsection in toc}[subsections numbered]
 
@@ -18,7 +19,7 @@
 \section{Introduction}
 \title{The Use of AI in Education}
 \subtitle{Main findings}
-\author[Pointon, Joel]{J.~Pointon\\\footnotesize{\textit{Supervised by T.~Chandesa}}\\ \vspace{20pt}\includegraphics[width=2.3cm]{../images/nottingham-logo.png}}
+\author[Pointon, Joel]{J.~Pointon\\\footnotesize{\textit{Supervised by T.~Chandesa\\Supported by I. Yaqub}}\\ \vspace{20pt}\includegraphics[width=2.3cm]{../images/nottingham-logo.png}}
 
 \date[September 2023] % (optional)
 {September 2023}
@@ -33,41 +34,33 @@
 %TOC----------------------------------------------
 \begin{frame}
 \frametitle{Overview} 
-% \tableofcontents
-\tableofcontents
+    \tableofcontents
 \end{frame}
 
 %2 - Theory----------------------------------------------
-\section{The Economics of Discrimination}
-\begin{frame}[t]{The Economics of Discrimination}
+\begin{frame}[t]{Introduction}
 \onslide<1->{
-		\begin{itemize}
-	    	\item Equal participation and progression could increase GDP by £24bn gains per year - 1.3\% of GDP (GOVg, 2017)
-		    \item Moral and economic problem affecting individuals
-			\item A lack of ethnicity research, particularly recently and across time (Heath and Cheung (2006) and Brynin and Güveli (2012))
-		\end{itemize}
+    \begin{itemize}
+        \item ChatGPT set a new standard for chatbots in late-2022
+        \item Chatbots benefit staff through streamlining Q\&A processes
+    \end{itemize}
 }
 \onslide<2>{
-		\begin{enumerate}
-		    \item Individual/direct pay discrimination (Human capital model suggests it is unlikely)
-			\item Institutional discrimination (statistical discrimination)
-			\item Systemic discrimination (Not considered in this paper)
-		\end{enumerate}
+    \begin{itemize}
+        \item Generative chatbots can confidently give false answers and incorrectly summarise documents
+        \item Students and other users require reliable sources to be used
+    \end{itemize}
 }
 \end{frame}
 
 %3 - Literature----------------------------------------------
 \begin{frame}[t]{Literature}
 \onslide<1->{
-		\begin{itemize}
-		    \item Higher pay gap for those born overseas (Berthoud, 2000)
-            \item Chinese, Indian and mixed workers receive higher annual pay than White British workers (ONS, 2018)
-		    \item Chinese differential is often attributed to a relative drive for educations (Leslie and Drinkwatr, 1999)
-            \item Mix of endownments and \enquote*{unexplained} factors (Blackaby et al., 2005)
-            \item Statistically significant levels of discrimination (Metcalf, 2009)
-			\item Occupational clustering is a key factor (Brynin and Güveli, 2012)
-			\item Lack of analysis of female ethnic wage gap
-		\end{itemize} %lack of recent research and over time
+    \begin{itemize}
+        \item \citeauthor{vaswani2017attention}'s `Attention is All You Need' paper (\citeyear{vaswani2017attention}) introduced the Transformer model, with many variations since (\acrshort{gpt}, \acrshort{bart}, T5 etc.)
+        \item Two approaches to learning: using model weights (\acrfull{mlm}) or model inputs \citep{documentStoreGuu}
+        \item Convert text to a vector embedding and use the cosine similarity between the query and documents to feed context via the model input \citep{openai_cookbook_qa_embeddings}
+    \end{itemize} %lack of recent research and over time
 }
 \end{frame}
 
@@ -75,146 +68,74 @@
 \section{Methodology}
 \begin{frame}[t]{Methodology}
 \onslide<1->{
-			\begin{itemize}
-				\item LFS, combined with US and ONS data
-				\item Merged 1997-2019 inclusive, using comparable variables
-				\item  497,144 White (93.3\%), 10,096 Black (1.9\%), 1,874 Chinese (0.4\%), 20,265 who are Asian but not Chinese (3.8\%), and 3,585 mixed race (0.7\%)
-			\end{itemize}
+    \begin{itemize}
+        \item Document store was created using two COMP-2032 course textbooks, split into 800 token sections \citep{gonzalez2018digital, solomon2010fundamentals}
+        \item T5 model was fine-tuned for question answering using the Natural Questions Dataset \citep{NQdataset}
+        \item Poor answer quality requred data enhancement using \acrshort{gpt}-3.5 Turbo (one-off dependency)
+    \end{itemize}
 }
+% Digital Image Processing textbook \citep{gonzalez2018digital} and validation metrics were computer using the Fundamentals of Digital Image Processing textbook \citep{solomon2010fundamentals}
 \onslide<2>{
     \begin{itemize}
-		\item Blinder-Oaxaca decompositions
-    \begin{equation}
-      D = [\bar{x_{w}} - \bar{x_{b}}]\beta_{b} + [\beta_{w} - \beta_{b}]\bar{x_{b}}
-      \label{eq:1}
-    \end{equation}
-    \vspace{-15pt}
-    \begin{equation}
-      D = [Explained] + [Unexplained]
-      \label{eq:2}
-    \end{equation}	
-    \item Unexplained part includes direct pay discrimination
+	\item Also fine-tuned a model using \acrshort{mlm} for comparison with two textbooks
+        \item A document-store with a fine-tuned \acrshort{gpt}-3.5 Turbo provides a benchmark for performance
     \end{itemize}
 }
 
 \end{frame}
 
-%5/6 - Descriptive Analysis-------------------------------------------
-\begin{frame}{Descriptive Analysis: Raw Pay Gap}
-\onslide<1>{
-%\vspace{-10pt}
-    \begin{columns}
-    \column{0.58\textwidth}
-        \vspace{5pt}
-		% \import{beamer/}{median_wages}
-	\column{0.42\textwidth}
-	    \vspace{-40pt}
-    	\begin{itemize}
-    	    \item Low sample size increases volatility
-    	    \item Asian workers consistently paid less
-    	    \item Deterioration for Black workers post-financial crisis
-    	    \item Chinese and mixed race workers outperformed wages of Whites
-    	\end{itemize}   
-	\end{columns}
-	%\vspace{-10pt}
-}
-\end{frame}
 
 %7/8 - Results----------------------------------------------
 \section{Results}
-\begin{frame}{Decomposition Results (\%)}
-		\textbf{Males}
-    	% \import{beamer/}{male_pct}
-		\textbf{Females}
-		% \import{beamer/}{female_pct}
+\begin{frame}[t]{Demonstration}
+\onslide<1->{
+    \begin{itemize}
+	\item Demonstration using \hyperlink{https://colab.research.google.com}{Google Colab} \citep{Bisong2019}
+    \end{itemize}
+}
+
 \end{frame}
 
-%9/10 - Explained Diffs----------------------------------------------
-\begin{frame}{\enquote*{Explained} Differences}
-\vspace{-10pt}
-    \begin{columns}
-    \column{0.56\textwidth}
-        \vspace{5pt}
-		% \includegraphics[width=\textwidth]{beamer/male_explained_pic}
-	\column{0.44\textwidth}
-	    \vspace{5pt}
-		% \includegraphics[width=\textwidth]{beamer/female_explained_pic.png}
-	\end{columns}
-	\vspace{-2pt}
-	\begin{itemize}
-	    \item Occupational clustering
-	    \item All have higher levels of education - adds to the literature
-	\end{itemize}
-\end{frame}
 
-%11 - Trends----------------------------------------------
-\begin{frame}{Trends in the \enquote*{Unexplained} Component}
-    \begin{columns}
-    \column{0.41\textwidth}
-        \vspace{5pt}
-        \textbf{Males}
-		% \import{beamer/}{unexplained_male}
-	\column{0.59\textwidth}
-	    \vspace{-2pt}
-	    \textbf{Females}
-		% \import{beamer/}{unexplained_female}
-	\end{columns}
-	\begin{itemize}
-	    \item Slight deterioration since financial crisis
-	    \item Consistently worse outcomes for males
-	\end{itemize}
-\end{frame}
-
-%11 - Endogeniety----------------------------------------------
-\begin{frame}{Endogeniety of Occupation}
-    \begin{columns}
-    \column{0.55\textwidth}
-        % \includegraphics[width=1.1\textwidth]{beamer/cross-correls.png}
-	\column{0.45\textwidth}
-	    \hspace{-20pt}
-	    \begin{itemize}
-	    \vspace{-20pt}
-	    \item Workers are theoretically rewarded for working in undesirable industries
-	    \item Not seen in (a), implying clustering is not due to preferences
-	    \item Racism does not explain wage premium (b) nor clustering (c)
-	    \item Contradiction, possibly due to a poor proxy or industry data
-	    \end{itemize}
-	\end{columns}
-	
+%11 - Conclusion----------------------------------------------
+\section{Concluding Remarks}
+\begin{frame}{Contributions}
+    \begin{itemize}
+        \item Promising results
+        \item Document store framework with Q\&A chatbot allows sources to be provided
+        \item The fine-tuned model can have many applications - simply provide different \acrshort{pdf}s/documents
+        \item No ongoing dependencies (such as \acrshort{gpt}-3.5 Turbo)
+        \item Provision of a dataset for training long-form, closed-domain question answering
+    \end{itemize}
 \end{frame}
 
 %11 - Conclusion----------------------------------------------
-\section{Conclusion}
-\begin{frame}{Conclusion}
-	 \begin{itemize}
-	    \vspace{-20pt}
-	    \item Added to literature through dataset and analysis over time
-	    \item Increased in wage gaps
-	    \item No evidence of direct pay discrimination for women
-	    \item Very little change in unexplained wage gaps over time
-	    \item Occupational clustering possibly evidence of employer perceptions of quality
-	 \end{itemize}
+\begin{frame}{Future Research}
+    \begin{itemize}
+        \item Adapt for tables, lists, formulas, images
+        \item Compare fine-tuned T5 to \acrshort{bart} and other models (the provided code supports this) 
+        \item Combined \acrshort{mlm} and question-answering fine-tuning
+        \item Research the efficacy, reliability and impact of chatbots in the classroom
+        \item All code can be found in the following GitHub repository: \url{https://github.com/pointonjoel/MSc-Diss}.
+    \end{itemize}
 \end{frame}
+
 
 %11 - References----------------------------------------------
 \begin{frame}[allowframebreaks]{Bibliography}
+% \footnotesize{
+% Berthoud, R. (2000): `Ethnic employment penalties in Britain,' \textit{Ethnic and Migration
+% Studies, 26:3, 389-416, DOI: 10.1080/713680490}.
+% \bigskip
+% \\Blackaby, D., D. Leslie, P. Murphy, and N. O'Leary (2005): `Born in Britain: How are native ethnic minorities faring in the British labour market?' \textit{Economics Letters, 88, 370-375}.
+% }
 \footnotesize{
-Berthoud, R. (2000): `Ethnic employment penalties in Britain,' \textit{Ethnic and Migration
-Studies, 26:3, 389-416, DOI: 10.1080/713680490}.
-\bigskip
-\\Blackaby, D., D. Leslie, P. Murphy, and N. O'Leary (2005): `Born in Britain: How are native ethnic minorities faring in the British labour market?' \textit{Economics Letters, 88, 370-375}.
-\bigskip
-\\Brynin, M. and A. Guveli (2012): `Understanding the ethnic pay gap in Britain,' \textit{Work, employment and society 26(4) 574-587 DOI: 10.1177/0950017012445095}.
-\bigskip
-\\GOV.UK (2017): \enquote*{Race in the workplace} \textit{The McGregor Smith review,} \url{https://assets.publishing.service.gov.uk/government/uploads/system/uploads/attachment_data/file/594336/race-in-workplace-mcgregor-smith-review.pdf}, accessed on 18/03/2021
-\bigskip
-\\Heath, A. and S. Y. Cheung (2006): `Ethnic penalties in the labour market: Employers and discrimination,' \textit{Department for Work and Pensions Research Report No 341.}
-\bigskip
-\\Leslie, D. and S. Drinkwatr (1999): `Staying on in Full-Time Education: Reasons for Higher Participation Rates Among Ethnic Minority Males and Females,' \textit{Economica 66:63-77, \url{https://doi.org/10.1111/1468-0335.00156}}.
-\bigskip
-\\Metcalf, H. (2009): `Pay gaps across the equality strands: a review,' \textit{National Institute of Economic and Social Research, Research report: 14}.
-\vspace{5pt}
-\\ONS (2018): `Ethnicity pay gaps in Great Britain: 2018,' \textit{\url{https://www.ons.gov.uk/employmentandlabourmarket/peopleinwork/earningsandworkinghours/articles/ethnicitypaygapsingreatbritain/2018}}, accessed on 27/02/2021.
+    \bibliography{paper/bibliography/bibliography}
 }
+\end{frame}
+
+%11 - Glossary----------------------------------------------
+\begin{frame}{Glossary}
+    \printnoidxglossaries
 \end{frame}
 \end{document}
