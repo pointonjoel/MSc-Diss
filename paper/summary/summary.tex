@@ -1,25 +1,35 @@
-\chapter{Summary and Reflections}
-
-\label{ch:summary}
-
-Including a discussion of results in a wider context (considering other work).
-
+\chapter{Summary and Reflections}\label{ch:summary}
+% Including a discussion of results in a wider context (considering other work).
 % Technical achievement. What has actually been achieved (as evident from the dissertation), how difficult it was, how original the approach has been. 
 % Quality of evaluation. Is there a good evaluation (with reference to the project’s aim and the state of the art); again it should demonstrate to reason logically, analyse the results and think critically, this time about own work. 
+This paper has outlined a pioneering framework that adapts fine-tuning techniques to produce a question-answering chatbot. It has produced and critically analysed three potential approaches to creating a chatbot which is both reliable and limited to answering from specific documents. The framework presented by this paper offers promising results and potential for fine-tuning a long-form, closed-domain question-answering chatbot, which has not yet been directly attempted by the literature. 
 
-\section{Project management}
+The main challenge with the use of a novel fine-tuning approach was a lack of naturally-worded, long-form, generative (and not extractive) answers. By using existing fine-tuned \acrlong{ai} models, specifically \acrshort{gpt}, to enhance the existing Natural Questions dataset, \citep{NQdataset}, this paper generated and has contributed to the literature by providing a novel dataset of naturally worded questions with succinct answers written in natural language. An improved dataset with human-generated answers (as opposed to \acrshort{ai}-generated ones) would likely bring improvements to this model.
 
-Covering the tasks as a part of your work plan and progress as well as how time and resources are managed.
+While the use of pre-trained Transformer models for creating chatbots is not novel, the combination of fine-tuning techniques and document store approaches, along with the comparison of different models, brings originality to this work. By using an innovative application of a (typically) summarisation training method, this paper has shown that it is possible to fine-tune an open-source pre-trained model to achieve accurate and reliable answers. While the fine-tuned T5 model produces imperfect responses, further improvement of such models could be achieved by enhancing and expanding the training dataset to generate highly effective responses. Access to high-performance \acrshort{gpu} resources could yield further improvements through the use of higher batch sizes, hyperparemeter tuning, and nested cross-validation.
+
+The proposed framework has a vast number of applications. Due to the model fine-tuning emphasis being on question-answering, rather than the knowledge of a specific domain, it can very easily be used in a variety of contexts. This model input can be utilised to provide relevant `knowledge' with each query, rather than attempting to retain information through the neural network weights. This approach benefits from more reliable answers and the ability to reference the sources used to provide an answer, unlike most \acrlong{sota} \acrshort{llm}s. These developments have the potential to improve the reliability and accuracy of chatbots, which can be used for students and academics, commerce, customer support, healthcare and more.
+
+For applications of the framework proposed in this paper, the model choice depends on the value placed on the quality of human-like responses. The \acrlong{sota} \acrshort{api} managed by OpenAI can produce excellent answers. While the fine-tuned T5 model produces very good numerical outcomes, the actual output from the model can lack substance, and will require an improved dataset to become reliable enough.
+
+This paper has shown the potential to produce a reliable long-form, closed-domain chatbot and offered a framework to do so. Further development of such a model could have applications in a wide range of fields, and lead to vastly improved outcomes for its users.
+
+% LINK CONCLUSION TO THE RESEARCH QUESTIONS/AIMS
 
 
-\section{Contributions and reflections}
+% \section{Project management}
 
-Providing the details of your achievements and contributions including innovation, creativity and novelty (if there is any) as well as a personal reflection on the plan and your experience of the project (a critical appraisal of how the project went).
+% Covering the tasks as a part of your work plan and progress as well as how time and resources are managed.
 
-Further work - assess how a chatbot impacts students in practice. Whether it gives accurate and consistent responses, whether it is used responsibly, and whether it consistently receives positive feedback from staff and students alike. Is it used to cheat?
+\section{Future Research}
+% Providing the details of your achievements and contributions including innovation, creativity and novelty (if there is any) as well as a personal reflection on the plan and your experience of the project (a critical appraisal of how the project went).
 
-Could combine multiple approaches - question answering with feeding the `knowledge' directly for MLM. However, this would mean that chatbots would need to be fine-tuned for each module, rather than having one fine-tuned chatbot for all modules.
+This paper has demonstrated promising results and the potential to use open-source Transformer models to create a long-form, closed-domain question-answering chatbot. However, there are a number of limitations and avenues for potential development. Firstly, the fine-tuned T5 question-answering model was trained on a a synthetically enhanced dataset (see Section \ref{sec: methodology_data_enhancement}), which seemed to limit its ability to understand the full meaning of a question and consistently extract the correct answer. The creation of a human-written dataset, as opposed to an AI-generated one, could vastly improve the potential success of the model. Additionally, adapting the dataset and framework to include tables, lists, formulas, and images would present a difficult but valuable improvement.
 
-Need to do better at processing tables and formulas as pictures.
+Secondly, a key limitation of this paper pertains to the sequence-to-sequence fine-tuning of only one model family (T5). Time constraints, combined with limited access to \acrshort{gpu} resources, prevented a comparison with other models, such as \acrshort{bart}. However, the framework and code provided enables alternative models to be trained, making it simple to compare the performance of different models.
+
+A potential area for improvement could be combining multiple fine-tuning approaches. Improved results could be achieved by fine-tuning for question answering in conjunction with additional \acrlong{mlm}. However, this approach would mean that chatbots would need to be fine-tuned for each module, as opposed to having one fine-tuned chatbot that can be used in a variety of applications.
+
+Finally, this paper does not address the impact of a chatbot in practice, particularly in the field of education. Additional research regarding the accuracy of answers (e.g. information about assessments and deadlines), whether it is possible to cheat, and whether it is used responsibly, is essential. Use of the framework in this paper requires rigorous testing to identify the reliability of any model's responses and their impact on users.
 
 % BIAS IN CHATGPT: https://platform.openai.com/docs/guides/embeddings/limitations-risks

@@ -1,28 +1,168 @@
-\chapter{Results}
+\chapter{Results and Discussion}\label{ch:results}
 % Explaining how your software was tested (using different datasets or in different environments), statistical evaluation of performance, results of user evaluation questionnaires, etc.
-The results of each of the three models will now be compared, discussing the qualitative answers and empirical evaluation where appropriate. The first model will be the model trained using \acrfull{mlm}, followed by the document store and gpt-3.5-turbo model, ending with the fine-tuned T5 model using the Natural Questions dataset.
-
-\section{\acrshort{mlm}}
-What is PCA?
-``PCA is an acronym for the process of encoding/ocus conversion, as opposed a form of RGB color coding. We refer to PCA as a method for the conversion of digital imagery into a digital image. PC"
-
-``PCA is an effective marker for image detection by image sensor, camera-cameraman and video transmission equipment.
-PCA, like camera-scan, marks pixels in an image, so any changes to the image"
-
-``
-PCA is an inverse inverse decomposition of a domain with a constant background and a subset of variables in which every variable can be contained.
-PCA is the objective of the classification algorithm developed for CAT. A high"
+The results of each of the three models will now be compared, with discussion on both the qualitative answers and empirical evaluation where appropriate. The discussion will begin with the model trained using \acrfull{mlm}, will be followed by the document store and \acrshort{gpt}-3.5 Turbo model, and will end with the fine-tuned T5 model using the Natural Questions dataset. For ease of comparison, the same three questions will be used as a prompt for each model.
 
 
-% Rouge scores: https://huggingface.co/learn/nlp-course/chapter7/5?fw=pt
-% The rouge1 variant is the overlap of unigrams — this is just a fancy way of saying the overlap of words and is exactly the metric we’ve discussed above.
-% Great, the precision and recall numbers match up! Now what about those other ROUGE scores? rouge2 measures the overlap between bigrams (think the overlap of pairs of words), while rougeL and rougeLsum measure the longest matching sequences of words by looking for the longest common substrings in the generated and reference summaries. The “sum” in rougeLsum refers to the fact that this metric is computed over a whole summary, while rougeL is computed as the average over individual sentences.
+% ---------------------------------------------
+\section{\acrlong{mlm}}\label{sec:results_mlm}
+\subsection{Empirical results}
+A \acrshort{gpt}-2 model was fine-tuned using \acrlong{mlm} as per Section \ref{sec:methodology_mlm}. The validation metrics can be found in Table \ref{tab:results_mlm}, with full training results and access to the Huggingface repo available in Appendix \ref{ch:appendixA}.
 
-% Is this needed?
-I conclude that the choice of model depends on the value placed on the quality of human-like responses. This backs up the findings of \citet{brown2020}, who noted that using the SuperGLUE benchmark (a standardized collection of datasets), GPT-3 outperforms BERT's average of 69.0 by achieving a score of 71.8 using few-shot learning. However, their results show that GPT-3 performs relatively poorly compared to SOTA levels for SQuADv2 (69.8 vs 93.0 F1 score) and other reading comprehension tasks. This is likely due to the training methods used with GPT, which has not been fine-tuned on these datasets and is designed to generate content in response to zero- or few-shot tasks (such as conducting arithmetic or writing articles which are indistinguishable from human form), rather than provide precise answers. However, this level of performance comes at a cost.
+\begin{table}[h]
+    \centering
+    \begin{tabular}{l|l}
+        \textbf{Metric} & \textbf{Value} \\ \hline
+        Training Loss & 3.3968 \\ \hline
+        Validation Loss & 4.0711 \\ \hline
+        Perplexity & 58.62 \\
+    \end{tabular}
+    \caption{Training Results for \acrshort{gpt}-2 Using \acrshort{mlm} Fine-Tuning}
+    \label{tab:results_mlm}
+\end{table}
+
+The early-stopping callback was activated after almost 7 epochs, due to the validation loss failing to fall sufficiently further. The training loss and validation loss both finished the training process stubbornly high at 3.40 and 4.07 respectively. The model had the potential to decrease the training loss further, but the validation loss reached a plateau, indicating possible overfitting to the training data. Furthermore, the associated perplexity value of 58.62 indicates the model's difficulty in accurately learning the context and semantic meaning of the text.
+
+There were a number of factors causing the model's poor performance. Firstly, the model had only one textbook, consisting of 1000 pages, which included specific figures and interrelated chapters. Cleaning the dataset to remove these nuances might enhance training results, but it would require considerable effort and time constraints prevented this. Furthermore, the very poor results above did not justify further investigation. In particular, the training loss exhibited slow and limited improvements, indicating significant difficulties in learning from the training data.
+
+\subsection{Qualitative output}
+To evaluate the model output and confirm the empirical results discussed above, a series of questions were given to the model.
+
+As can be seen in Figure \ref{fig:results_mlm_ex1}, the model answers using natural language which is grounded in the domain/context of the training data (textbook). However, unfortunately, the answer has several issues. Firstly, the model has failed to grasp the concept of \acrfull{pca}, and has given a vague and incorrect answer. Secondly, the answer contains words (tokens) which are not present in the training data (e.g. ``NONAMBOW''). Finally, the model has not given a succinct answer and has been cutoff by the 150 token limit (introduced for demonstration purposes). 
+
+\begin{figure}[h]
+    \begin{itquote}
+        \textbf{What is principal component analysis?} \\ NONAMBOW: *The term principal component analysis is defined in the context of classifying a continuous graph as a matrix-by-matrix function of spatial and temporal dimensions. This approach is equivalent to a function of all principal components in a binary variable, but is more detailed. Lista: * Principal component analysis does not involve discrete spatial data, and spatial aspects of a continuous graph, but simply spatial images. NONAMB, M: *Principal, M, and T is the probability of defining a function from the binary variables. NONAMB: *Principal function analysis does not depend on discrete spatial data, but consists of discrete spatial features (such, pixels and color pixels
+    \end{itquote}
+    \caption{Fine-tuned \acrshort{gpt}-2's response to the prompt ``What is principal component analysis?''}
+    \label{fig:results_mlm_ex1}
+\end{figure}
+
+A second prompt asking about meaning of the acronym \acrshort{rgb} is shown in Figure \ref{fig:results_mlm_ex2} and demonstrates a more promising response. The model provides a succinct natural-sounding answer grounded in the context of the training corpus but fails to give a correct answer. It also suffers from `hallucinations' (see Section \ref{sec:background_implementations}), providing a misleading colour range.
+
+\begin{figure}[h]
+    \begin{itquote}
+        \textbf{What does RGB stand for?} \\
+       For example, on screen a black square with the color range 0, 1, 15, 60.
+        Then you can see on retina, black squares are always a rectangle but there is no color in those
+        black gray pixels.
+    \end{itquote}
+    \caption{Fine-tuned \acrshort{gpt}-2's response to the prompt ``What does RGB stand for?''}
+    \label{fig:results_mlm_ex2}
+\end{figure}
+
+It is also pertinent to ask a question which is not related to the training data, to observe how the model responds. This final example output is given in Figure \ref{fig:results_mlm_ex3}, where the model gives an irrelevant, incorrect, and poorly formed answer. Additionally, it contains specific tokens from the training data, such as references and figure numbers. While the model could be improved by cleaning the training data to remove these artefacts, the model is still highly likely to respond poorly to irrelevant questions.
+
+\begin{figure}[h]
+    \begin{itquote}
+        \textbf{Who is prime minister of the uk?} \\ 
+        (). These two concepts of  representation are based on the representation of a set of  subset of an integer or the set of elements defined in terms of [17] [20]. The function of representa d is  the sum of every subsets of  representatives in a set. All subset  of an integer or set of elements is represented in an integer. EXAMPLE 54 Example 54a.1  (a) f (b)  (c)  (d)  (e)  (f)  (g)   (h)  (i)  (
+    \end{itquote}
+    \caption{Fine-tuned \acrshort{gpt}-2's response to the prompt ``Who is prime minister of the uk?''}
+    \label{fig:results_mlm_ex3}
+\end{figure}
+
+\section{Document Store With \acrshort{gpt}-3.5 Turbo}\label{sec:results_gpt_turbo}
+The framework using a document store and \acrshort{gpt}-3.5 Turbo has no evaluation metrics, as the model has already been fine-tuned and is not available on open-source platforms. Therefore, only the qualitative output of the model will be discussed. The first question about \acrshort{pca} was posed to the model, with the response given in Figure \ref{fig:results_gpt_ex1}.
+
+\begin{figure}[h]
+    \begin{itquote}
+        \textbf{What is principal component analysis?} \\
+        \acrfull{pca} is a statistical technique used for dimensionality reduction. It identifies the dominant subset of orthogonal directions in a feature space and discards the components that contribute little variance to the data. By using only the significant components, \acrshort{pca} can accurately approximate and describe the data in a more compact way. It is commonly used in multidimensional problems, such as analyzing digital images, where there may be tens, hundreds, or even thousands of variables. \acrshort{pca} calculates the principal axes, which are uncorrelated variables
+        that maximize the variance of the data along each axis.
+        
+        To construct this answer, I used the following documents:
+           
+        \begin{enumerate}
+            \item Fundamentals\_of\_Digital\_Image\_Processing\_Textbook->Page(s)274/275:  Depending on the precise context, there may be several closely related reasons for doing  \acrshort{pca}, but...
+            \item Fundamentals\_of\_Digital\_Image\_Processing\_Textbook->Page(s)265/266/267:  To grasp the essence of \acrshort{pca}, suppose we have a large sample of M children and that we wish  to ass...
+            \item Fundamentals\_of\_Digital\_Image\_Processing\_Textbook->Page(s)267/268/269:  Weight  90.57  73.43  w 1/4  69:42  Weight  1  0.57  Height  73.43  182.99  h  1/4  173:25  Heigh...
+            \item Fundamentals\_of\_Digital\_Image\_Processing\_Textbook->Page(s)278/279/280/281:  When we carry out a \acrshort{pca} on this ensemble of faces, we find that the eigenvalue spectrum  dies off ...
+        \end{enumerate}
+    \end{itquote}
+    \caption{\acrshort{gpt}-3.5 Turbo's response to the prompt ``What is principal component analysis?''}
+    \label{fig:results_gpt_ex1}
+\end{figure}
+
+The response is excellent for several reasons. Firstly, it succinctly provides an accurate answer using the sources. Secondly, the framework (outlined in Figure \ref{fig:initial_framework}) enables the specific sources to be referenced so that any user/student can conduct further reading. Thirdly, and finally, the answer is grounded in the context of computer vision using a combination of the provided sources, such that the model does not suffer from `hallucinations' and its output can be trusted.
+
+The second example regarding the \acrshort{rgb} colour model is shown in Figure \ref{fig:results_gpt_ex2} and demonstrates a good response, but has room for improvement. 
+
+\begin{figure}[h]
+    \begin{itquote}
+        \textbf{What does \acrshort{rgb} stand for?} \\ 
+        \acrshort{rgb} stands for Red, Green, Blue.
+        
+        To construct this answer, I used the following documents:
+           
+        \begin{enumerate}
+            \item Fundamentals\_of\_Digital\_Image\_Processing\_Textbook->Page(s)28/29:  \acrshort{rgb} (or true colour) images are 3-D arrays that we may consider conceptually as three  distinct 2-...
+            \item Digital\_Image\_Processing\_Textbook->Page(s)408/409:  In the \acrshort{rgb} model, each color appears in its primary spectral components of red,   green, and blue....
+            \item Digital\_Image\_Processing\_Textbook->Page(s)412:  As we have seen, creating colors in the \acrshort{rgb}, CMY, and CMYK models, and chang-   ing from one model ...
+            \item Digital\_Image\_Processing\_Textbook->Page(s)409/410:  The cube in Fig. 6.8 is a solid, composed of the (  )  28 3 colors mentioned in the preceding para...
+        \end{enumerate}
+    \end{itquote}
+    \caption{\acrshort{gpt}-3.5 Turbo's response to the prompt ``What does \acrshort{rgb} stand for?''}
+    \label{fig:results_gpt_ex2}
+\end{figure}
+
+While the model provided a correct answer, it stopped short of providing any additional detail, in part because of the phrasing of the question. Additionally, the model could have answered the question using only the first two sources, as the third and fourth sources contain no additional useful information, meaning that tokens were wasted which incurs a higher financial cost through using the \acrshort{api}. Consequently, the framework could be improved by either increasing the cosine similarity needed to use a section of knowledge, reducing the token limit, or reducing the number of sources passed to the model.
+
+The third and final example is the irrelevant question regarding the UK Prime Minister. The output in Figure \ref{fig:results_gpt_ex3} demonstrates how the framework/model can correctly identify questions which are beyond the scope of the chatbot's topic and respond appropriately.
+
+\begin{figure}[h]
+    \begin{itquote}
+        \textbf{Who is prime minister of the uk?} \\
+        I could not find an answer in the text I've been provided, sorry! Please try again.
+    \end{itquote}
+    \caption{\acrshort{gpt}-3.5 Turbo's response to the prompt ``Who is prime minister of the uk?''}
+    \label{fig:results_gpt_ex3}
+\end{figure}
+
+\section{Document Store With Fine-Tuned T5}\label{sec:results_t5}
+\subsection{Empirical Results}
+The third and final model to discuss is the T5 model fine-tuned for question-answering.
+
+
+\begin{tikzpicture}
+\begin{axis}
+\addplot table [x=Step, y=Value, col sep=comma] {images/eval_loss_t5.csv};
+\end{axis}
+\end{tikzpicture}
+
+The empirical results of fine-tuning a model using a question-answering dataset are shown in Figure \ref{tab:results_t5}:
+
+\begin{table}[h]
+    \centering
+    \begin{tabular}{l|l}
+        \textbf{Metric} & \textbf{Value} \\ \hline
+        Training Loss & 1.3849 \\ \hline
+        Validation Loss & 1.0848 \\ \hline
+        Rouge1 & 41.527 \\ \hline
+        Rouge2 & 33.324 \\ \hline
+        Rougel & 38.4866 \\ \hline
+        Rougelsum & 38.4856 \\ \hline
+        Bleu & 29.906 \\ \hline
+        Gen Len & 17.1296 \\ \hline
+        Meteor & 0.377 \\ \hline
+        No ans accuracy & 47 \\
+    \end{tabular}
+    \caption{Training Results for T5 Fine-Tuned for Question-Answering}
+    \label{tab:results_t5}
+\end{table}
+
+As can be seen in Figure \ref{tab:results_t5}, after X epochs of training, both the training and validation loss are very low. Furthermore, the model achieves excellent results using \acrshort{rouge}, \acrshort{bleu} and \acrshort{meteor} scores. \acrshort{rouge} scores are by nature difficult to compare, as the vocabulary and context vary with each application. However, we can say that around 42\% of the words in the target answer were included in the generated answer (\acrshort{rouge}1). Additionally, model still performs well when comparing bigram overlap (\acrshort{rouge}2). The model also scores highly using the \acrshort{bleu} score and \acrshort{meteor} score, which are more complex than a \acrshort{rouge} score, but similarly compare the accuracy of the generated text to the target answer.
+
+However, even with the training and validation datasets containing 30\% unanswerable questions, the model still struggled to identify unanswerable questions, with only 2\% being correctly identified. Additionally, the model appears to be underfitting, as opposed to overfitting to the data. This is shown by the training loss being higher than the validation loss.
+
+There are several ways this model could be improved. Despite using regularisation techniques, there is scope to improve the training process by using more data. The training process only used 10121 examples (see Section \ref{sec:methodology_t5}), due to a limited amount of high-quality data. Sourcing more examples could improve the amount of information available to the model and improve its responses. This could be achieved by either combining another dataset or synthetically creating more examples using \acrlong{ai} such as \acrshort{gpt}.
+
+\subsection{Usage}
+The above performance metrics are promising, but are difficult to compare to different models, so the output from testing the model will provide the greatest insights.
+
+EXAMPLES HERE.
 
 \section{Costs}\label{sec:results_costs}
-The superior performance of GPT comes at a higher cost than open-source models. As shown in Table \ref{tab:results_cost_comparison}, BERT and BART have no outright cost for usage (aside from the running costs: electricity, hardware, setup time etc.). While each query using GPT is very cheap, it is cumulatively likely to cost several hundred pounds per year for each module that uses it, which might be unattainable for several departments. Additionally, departments would need to justify that this model is sufficiently more robust, reliable, and beneficial than ChatGPT (which is currently free). Note that there is also a very small cost each time a query embedding is requested (\$0.0004/1,000 tokens), but this is negligible compared the cost of asking GPT for an answer, as the number of tokens per query is very small (<50).
+\acrshort{gpt}-3.5 Turbo demonstrates superior performance, but it comes at a higher cost compared to open-source models. As shown in Table \ref{tab:results_cost_comparison}, \acrshort{gpt}-2 and T5 have no outright cost for usage (aside from the running costs: electricity, hardware, setup time etc.). The only model which has ongoing usage costs is \acrshort{gpt}-3.5 Turbo. Although each query using this model is inexpensive, the cumulative cost for each module using the model may reach several hundred pounds per year. for each module that uses it, which might be unattainable for several departments. Additionally, departments would need to justify that this model is sufficiently more robust, reliable, and beneficial than ChatGPT, which is currently free \citep{ChatGPTrelease}. Note that there is also a very small cost each time a query embedding is requested (\$0.0004/1,000 tokens), but this is negligible compared to the cost of each query \acrshort{gpt}, as the number of tokens per query is very small (typically under 50).
 
 \begin{table}[h!]
     \centering
@@ -31,18 +171,27 @@ The superior performance of GPT comes at a higher cost than open-source models. 
         \hline
         \textbf{Model} & \textbf{Cost per query\parnote{Estimated cost using based on each query using 2000 tokens}} & \textbf{Cost per student\parnote{Estimated cost using based on 100 queries per student}} & \textbf{Cost per module\parnote{Estimated cost using based on 300 students in a module}}\\
         \hline
-        GPT: \texttt{3.5-turbo} & \$0.004 & \$0.40 & \$120\parnote{Excluding the small cost of embedding students' questions} \\
+        \texttt{\acrshort{gpt}-2} & \$0.000 & \$0.00 & \$0 \\
         \hline
-        BERT: \texttt{deepset/bert-base-cased-squad2} & \$0.00 & \$0.00 & \$0 \\
+        \texttt{\acrshort{gpt}-3.5 Turbo} & \$0.004 & \$0.40 & \$120\parnote{Excluding the small cost of embedding students' questions} \\
         \hline
-        BART: \texttt{vblagoje/bart\_lfqa} & \$0.00 & \$0.00 & \$0 \\
+        \texttt{T5} & \$0.000 & \$0.00 & \$0 \\
         \hline
     \end{tabularx}
     \parnotes
-    % \vspace{-25pt}
+    \vspace{-15pt}
     \label{tab:results_cost_comparison}
-\end{table}
+\end{table} 
 
-All models have their merits, but GPT is easily the most impressive model, excelling at providing human-like responses, and limiting its answers to the sources provided - it's a classic case of `you get what you pay for'.
+\section{Applications}
+% Write about any applications (everywhere!) and specific dependencies on gpt etc.
+The framework used by the two most impressive models, \acrshort{gpt}-3.5 Turbo and fine-tuned T5, can be used in an almost limitless number of applications. Neither model is fined-tuned to work only on a specific domain, and rely solely on the input documents. In the context of educational use, academics need to only provide a few high-quality text-based documents (such as textbooks or detailed lecture notes) and the framework will chunk them into sections for use with the chosen \acrshort{ai} model. Therefore, this framework can also be used in a variety of applications: customer service, general \acrshort{faq} services, healthcare, legal advice, technical support and more. 
 
-Ideally would find the optimum hyperparameters (Learning rate and and weight decay) using grid search or random search, but didn't have adequate computing power to conduct this. Therefore model performance could be improved further. 
+The custom fine-tuned T5 chatbot (see Section \ref{sec:methodology_t5}) has no ongoing dependency on \acrshort{gpt} or OpenAI in general. It is completely open-source (if \acrshort{gpt} embeddings are not used) and can be run without a \acrshort{gpu}.
+
+\section{Limitations}
+There are several limitations to the findings in this paper. Firstly, T5 was the only model fine-tuned for question-answering, and was chosen because of the availability of the `small' variant. However, other models such as \acrshort{bart} are available and could have produced better outcomes.
+
+The second limitation pertains to the evaluation process. Due to limited access to the high-performance \acrshort{gpu}s required to fine-tune the models, nested cross-validation was not used to provide a generalisation error. Therefore, the results may not be a reliable estimate of the generalisation error. If more resources were available for this research, the generalisation error and optimal hyperparameters could be found using grid search or otherwise, which could have also improved model performance.
+
+The final limitation is that the \acrshort{gpt}-3.5 Turbo model requires ongoing use of the OpenAI \acrshort{api}, which may be discontinued in the future.
