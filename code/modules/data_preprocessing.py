@@ -93,9 +93,17 @@ class TrainingData:
         """
         Tokenises the question/context and answers for a DatasetDict object
         """
+        # check if the answer lies in the first 1024 tokens
+        truncated_content_tokens = self.tokeniser(data['content'], truncation=True, max_length=1024)['input_ids']
+        truncated_content = []
+        for tokens in truncated_content_tokens:
+            truncated_content.append(self.tokeniser.decode(tokens, skip_special_tokens=True))
+        bools = []
+        for answer, content in zip(data['answer'], truncated_content):
+            bools.append(answer in content)
 
         # tokenize the inputs (questions and contexts)
-        additional_cols = self.tokeniser(data['content'], data['question'], truncation=False)
+        additional_cols = self.tokeniser(truncated_content, data['question'], truncation=False)
 
         # tokenize the answers
         targets = self.tokeniser(text_target=data['answer'], truncation=False)
@@ -103,6 +111,7 @@ class TrainingData:
         # set labels
         additional_cols['labels'] = targets['input_ids']
         additional_cols['num_tokens'] = [len(row) for row in additional_cols["input_ids"]]
+        additional_cols["valid"] = bools
         return additional_cols
 
     def ensure_ans_non_ans_balance(self):
@@ -141,8 +150,8 @@ class TrainingData:
         gc.collect()
 
         self.training_data = self.training_data.map(self.tokenise, batched=True)
-        self.training_data = self.training_data.filter(
-            lambda row: (row["num_tokens"] >= self.min_tokens) & (row["num_tokens"] <= self.max_tokens))
+        self.training_data = self.training_data.filter(lambda row: (row["num_tokens"] >= self.min_tokens) & (
+                (row["num_tokens"] <= self.max_tokens) | (row["valid"] == True)))
         num_training_examples = len(self.training_data['training'])
         log_and_print_message(
             f'Overall reduced dataset from {self.num_provided_examples} to {num_training_examples} examples.')
