@@ -20,7 +20,7 @@ A \acrshort{gpt}-2 model was fine-tuned using \acrlong{mlm} as per Section \ref{
     \label{tab:results_mlm}
 \end{table}
 
-The early-stopping callback was activated after almost 7 epochs, due to the validation loss failing to fall sufficiently further. The training loss and validation loss both finished the training process stubbornly high at 3.40 and 4.07 respectively. This is demonstrated graphically in Figure \ref{fig:results_mlm_loss}. The model had the potential to decrease the training loss further, but the validation loss reached a plateau, indicating possible overfitting to the training data. Furthermore, the associated perplexity value of 58.62 indicates the model's difficulty in accurately learning the context and semantic meaning of the text.
+The early-stopping callback was activated after almost 7 epochs, due to the validation loss failing to fall sufficiently further. The training loss and validation loss both finished the training process stubbornly high at 3.40 and 4.07 respectively. This is demonstrated graphically in Figure \ref{fig:results_mlm_loss}. The model had the potential to decrease the training loss further, but the validation loss reached a plateau, indicating possible overfitting to the training data. Furthermore, the associated perplexity value of 58.62 indicates the model's difficulty in accurately learning the context and semantic meaning of the text, or at least in learning topic-specific information as opposed to textbook-specific information.
 
 \begin{figure}[ht!]
 \centering
@@ -134,7 +134,7 @@ The third and final example is the irrelevant question regarding the UK Prime Mi
 
 \section{Document Store With Fine-Tuned T5}\label{sec:results_t5}
 \subsection{Empirical Results}\label{sec:results_t5_empirical}
-The third and final model to discuss is the T5 model fine-tuned for question-answering. Figure \ref{fig:results_t5_loss} shows how the training loss had a steep decline in the first couple of epochs, and continued to fall even approaching 10 epochs. The validation loss, however, steadily declined until epoch 7. A small rise and plateau occured after this, with the early stopping callback ending the training after almost 10 epochs. There is no clear sign of overfitting from this data, with the training and validation loss both below 1 and close together. 
+The third and final model to discuss is the T5 model fine-tuned for question-answering. Figure \ref{fig:results_t5_loss} shows how the training loss had a steep decline in the first couple of epochs, and continued to fall even approaching 10 epochs. The validation loss, however, steadily declined until epoch 7. A small rise and plateau occurred after this, with the early stopping callback ending the training after almost 10 epochs. There is no clear sign of overfitting from this data, with the training and validation loss both below 1 and close together. 
 
 \begin{figure}[ht!]
 \centering
@@ -150,7 +150,7 @@ The third and final model to discuss is the T5 model fine-tuned for question-ans
 \label{fig:results_t5_loss}
 \end{figure}
 
-After almost 10 epochs, the model achieves excellent results. Table \ref{tab:results_t5} shows that the model achieved a average cosine similarity of 0.762 between the generated answer and the target answer, with the \acrshort{rouge}1 and \acrshort{rouge}2 scores showing that uni- and bi-grams had an overlap of 44.4\% and 38.8\% respectively. Similar results using the \acrshort{bleu} and \acrshort{meteor} metrics confirm a significant overlap between generated answers and target answers. Encouragingly, the model can confidently distinguish between answerable and unanswerable questions, with only 10.4\% of answerable questions being classified as unanswerable questions. However, there is room for improvement, with only 69.7\% of unanswerable questions being detected; the model is relatively likely (incorrectly) respond to a question which cannot be answered using the provided context. Additionally, the generated length of an answer is only 12.7 tokens, on average, indicating that the model may only produce short answers rather than provide explanatory content or reasoning. 
+After almost 10 epochs, the model achieves excellent results. Table \ref{tab:results_t5} shows that the model achieved an average cosine similarity of 0.762 between the generated answer and the target answer, with the \acrshort{rouge}1 and \acrshort{rouge}2 scores showing that uni- and bi-grams had an overlap of 44.4\% and 38.8\% respectively. Similar results using the \acrshort{bleu} and \acrshort{meteor} metrics confirm a significant overlap between generated answers and target answers. Encouragingly, the model can confidently distinguish between answerable and unanswerable questions, with only 10.4\% of answerable questions being classified as unanswerable questions. However, there is room for improvement, with only 69.7\% of unanswerable questions being detected; the model is relatively likely (incorrectly) respond to a question which cannot be answered using the provided context. Additionally, the generated length of an answer is only 12.7 tokens, on average, indicating that the model may only produce short answers rather than provide explanatory content or reasoning. 
 
 \begin{table}[ht!]
     \centering
@@ -174,7 +174,7 @@ After almost 10 epochs, the model achieves excellent results. Table \ref{tab:res
 \end{table}
 
 \subsection{Qualitative Output}
-While the evaluation results are very promising, most metrics are difficult to compare between different models, so the output from testing the model will provide the greatest insights. The first prompt and response is shown in Figure \ref{fig:results_t5_ex1}, demonstrates the potential for false negatives. Even though the model was provided the the context to extract a correct answer, it failed to produce an answer.
+While the evaluation results are very promising, most metrics are difficult to compare between different models, so the output from testing the model will provide the greatest insights. The first prompt and response is shown in Figure \ref{fig:results_t5_ex1} and demonstrates the potential for false negatives. Even though the model was provided with the context to extract a correct answer, it failed to produce an answer.
 
 \begin{figure}[ht!]
     \begin{itquote}
