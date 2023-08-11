@@ -1,3 +1,13 @@
+\usepackage{pdfpages}
+\usepackage[absolute,overlay]{textpos}
+\usepackage{graphicx}
+\usepackage{graphics}
+\usepackage{amsmath}
+\usepackage{multicol}
+\usepackage{natbib}
+\usepackage{pgfplots} %to make graphs
+\usepackage{tikz} %to create tikz stuff
+\usepackage{csquotes} %for the quotation marks
 \hypersetup{pdfpagemode=FullScreen}
 \usetheme[progressbar=frametitle]{Berlin}
 \definecolor{mainblue}{RGB}{16,38,59}
@@ -11,7 +21,7 @@
 \setbeamercolor{frametitle}{fg=nottsred,bg=grey} % slide titles
 \setbeamercolor{palette secondary}{bg=secondblue,fg=white} % bar at the top
 \setbeamercolor{palette tertiary}{bg=mainblue,fg=white} % bar at the top
-\setbeamercolor{palette quaternary}{bg=green,fg=white} % nada
+% \setbeamercolor{palette quaternary}{bg=green,fg=white} % nada
 \setbeamercolor{structure}{fg=nottsred} % itemize, enumerate, etc
 \setbeamercolor{section in toc}{fg=black} % TOC sections
 
@@ -30,7 +40,11 @@
 % \setbeamercolor{frametitle}{fg=white,bg=mainblue}
 % \setbeamercolor{block title}{use=structure,fg=white,bg=mainblue}
 % \setbeamercolor{block body}{use=structure,fg=white,bg=mainblue}
-\hypersetup{colorlinks,linkcolor=,urlcolor=gold}
+\usepackage[colorlinks, allcolors=nottsred]{hyperref}
+% \hypersetup{colorlinks,
+%             linkcolor=,
+%             urlcolor=nottsred
+%             citecolor=Violet}
 
 \usepackage{docmute}
 \makeatletter
@@ -49,12 +63,5 @@
 \makeatother
 \setbeamercolor{background canvas}{bg=white}
 
-\usepackage{pdfpages}
-\usepackage[absolute,overlay]{textpos}
-\usepackage{graphicx}
-\usepackage{graphics}
-\usepackage{amsmath}
-\usepackage{multicol}
-\usepackage{pgfplots} %to make graphs
-\usepackage{tikz} %to create tikz stuff
-\usepackage{csquotes} %for the quotation marks
+\usepackage[notoc]{glossaries}
+\input{paper/acronyms}
