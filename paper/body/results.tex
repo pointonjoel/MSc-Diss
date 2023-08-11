@@ -122,12 +122,16 @@ The third and final example is the irrelevant question regarding the UK Prime Mi
 \subsection{Empirical Results}
 The third and final model to discuss is the T5 model fine-tuned for question-answering.
 
-
+\begin{figure}[h]
+\centering
+\caption{Validation loss at each epoch fine-tuning T5}
 \begin{tikzpicture}
-\begin{axis}
+\begin{axis}[xlabel={Step}, ylabel={Validation loss}]
 \addplot table [x=Step, y=Value, col sep=comma] {images/eval_loss_t5.csv};
 \end{axis}
 \end{tikzpicture}
+\label{fig:results_t5_val_loss}
+\end{figure}
 
 The empirical results of fine-tuning a model using a question-answering dataset are shown in Figure \ref{tab:results_t5}:
 
