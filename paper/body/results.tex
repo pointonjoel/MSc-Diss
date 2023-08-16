@@ -10,13 +10,13 @@ A \acrshort{gpt}-2 model was fine-tuned using \acrlong{mlm} as per Section \ref{
 
 \begin{table}[ht!]
     \centering
+    \caption{Training Results for \acrshort{gpt}-2 Using \acrshort{mlm} Fine-Tuning}
     \begin{tabular}{l|l}
         \textbf{Metric} & \textbf{Value} \\ \hline
         Training Loss & 3.3968 \\ \hline
         Validation Loss & 4.0711 \\ \hline
         Perplexity & 58.62 \\
     \end{tabular}
-    \caption{Training Results for \acrshort{gpt}-2 Using \acrshort{mlm} Fine-Tuning}
     \label{tab:results_mlm}
 \end{table}
 
@@ -24,7 +24,6 @@ The early-stopping callback was activated after almost 7 epochs, due to the vali
 
 \begin{figure}[ht!]
 \centering
-\caption{Training and Validation Loss at Each Epoch using \acrshort{mlm}}
 \begin{tikzpicture}
 \begin{axis}[xlabel={Step}, ylabel={Validation loss}]
 \addplot table [x=Epoch, y=Train, col sep=comma] {images/train_loss_mlm.csv};
@@ -33,6 +32,7 @@ The early-stopping callback was activated after almost 7 epochs, due to the vali
 \addlegendentry{Validation Loss}
 \end{axis}
 \end{tikzpicture}
+\caption{Training and Validation Loss at Each Epoch using \acrshort{mlm}}
 \label{fig:results_mlm_loss}
 \end{figure}
 
@@ -138,7 +138,6 @@ The third and final model to discuss is the T5 model fine-tuned for question-ans
 
 \begin{figure}[ht!]
 \centering
-\caption{Training and Validation Loss at Each Epoch for Fine-Tuned T5}
 \begin{tikzpicture}
 \begin{axis}[xlabel={Step}, ylabel={Validation loss}]
 \addplot table [x=Epoch, y=Train, col sep=comma] {images/train_loss_t5.csv};
@@ -147,6 +146,7 @@ The third and final model to discuss is the T5 model fine-tuned for question-ans
 \addlegendentry{Validation Loss}
 \end{axis}
 \end{tikzpicture}
+\caption{Training and Validation Loss at Each Epoch for Fine-Tuned T5}
 \label{fig:results_t5_loss}
 \end{figure}
 
@@ -154,6 +154,7 @@ After almost 10 epochs, the model achieves excellent results. Table \ref{tab:res
 
 \begin{table}[ht!]
     \centering
+    \caption{Validation Results for T5 Fine-Tuned for Question-Answering}
     \begin{tabular}{l|l}
         \textbf{Metric} & \textbf{Value} \\ \hline
         Training Loss & 0.465 \\ \hline
@@ -169,7 +170,6 @@ After almost 10 epochs, the model achieves excellent results. Table \ref{tab:res
         False negatives & 10.4\% \\ \hline
         Cosine Similarity & 0.763 \\
     \end{tabular}
-    \caption{Validation Results for T5 Fine-Tuned for Question-Answering}
     \label{tab:results_t5}
 \end{table}
 
@@ -241,7 +241,7 @@ The framework used by the two most impressive models, \acrshort{gpt}-3.5 Turbo a
 The custom fine-tuned T5 chatbot (see Section \ref{sec:methodology_t5}) has no ongoing dependency on \acrshort{gpt} or OpenAI in general. It is completely open-source (if \acrshort{gpt} embeddings are not used) and can be run without a \acrshort{gpu}.
 
 \section{Limitations}
-There are several limitations to the findings in this paper. Firstly, T5 was the only model fine-tuned for question-answering, and was chosen because of the availability of the `small' variant. However, other models such as \acrshort{bart} are available and could have produced better outcomes.
+There are several limitations to the findings in this \papertype. Firstly, T5 was the only model fine-tuned for question-answering, and was chosen because of the availability of the `small' variant. However, other models such as \acrshort{bart} are available and could have produced better outcomes.
 
 The second limitation pertains to the evaluation process. Due to limited access to the high-performance \acrshort{gpu}s required to fine-tune the models, nested cross-validation was not used to provide a generalisation error. Therefore, the results may not be a reliable estimate of the generalisation error. If more resources were available for this research, the generalisation error and optimal hyperparameters could be found using grid search or otherwise, which could have also improved model performance.
 

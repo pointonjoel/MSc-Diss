@@ -71,9 +71,11 @@ The learning in neural networks occurs in training the weights that connect each
 
 The predicted values are subsequently compared against the expected (true) value, and the model computes the error (the difference between the predicted and true values). This error is fed into a loss function (E), which is a measure of the inaccuracy of the model; the aim is to minimise the loss function. For most classification problems, a cross-entropy (log loss) function is used to compare the difference between the actual value ($y_i$) and the predicted value ($\hat{y_i}$) for each of the prediction classes (of size $N=n^L$, where L is subscript and not an exponent):
 
-$$E = -\sum_{i=0}^{n^L-1} y_i*log(\hat{y_i})$$
+\begin{equation}\label{eq:loss}
+    E = -\sum_{i=0}^{n^L-1} y_i*log(\hat{y_i})
+\end{equation}
 
-Once the value for the loss function has been calculated, the model seeks to update weights and biases in each layer, using a process called backpropagation \citep{Rumelhart, maths2015Nielsen}. We can define the following notation:
+This is shown in Equation \ref{eq:loss} where the loss ($E$) is a function of both the actual and predicted values. Once the value for the loss function has been calculated, the model seeks to update weights and biases in each layer, using a process called backpropagation \citep{Rumelhart, maths2015Nielsen}. We can define the following notation:
 
 $a_j^L$: \textit{The output value of the jth node in the Lth layer (once the activation function has been applied)}
 
@@ -83,12 +85,18 @@ $b_j^L$: \textit{The bias applied to the jth node in the Lth layer}
 
 $z_j^L = w_j^L a_j^{L-1} + b_j^L$: \textit{The value of the jth node in the Lth layer}
 
-We can therefore say that $a_j^L = \sigma(z_j^L)$, where $\sigma$ denotes the activation function.
+We can therefore say that:
+\begin{equation}\label{eq:equality}
+    a_j^L = \sigma(z_j^L),
+\end{equation}
+where $\sigma$ denotes the activation function in Equation \ref{eq:equality}.
 
 The backpropagation process begins by computing the rate of change of the cost function with respect to each of the weights (holding other weights constant) because we are seeking to minimise the cost function. This is given by $\partial E/ \partial w_{jk}^L$.
 % ,\quad \forall  i \in [1,n^L]$$ where $n^L$ denotes the size of the current layer (L is subscript and not an exponent).
-By using the chain rule, we can expand this expression:
-$$\frac{\partial E}{\partial w_{jk}^L} = \frac{\partial z_j^L}{\partial w_{jk}^L} \frac{\partial a_j^L}{\partial z_j^L} \frac{\partial E}{\partial a_j^L}$$ % \; can work for spacing
+By using the chain rule, we can expand this expression into multiple partial derivatives, as shown in Equation \ref{eq:partials}:
+\begin{equation}\label{eq:partials}
+    \frac{\partial E}{\partial w_{jk}^L} = \frac{\partial z_j^L}{\partial w_{jk}^L} \frac{\partial a_j^L}{\partial z_j^L} \frac{\partial E}{\partial a_j^L} % \; can work for spacing
+\end{equation}
 Similarly, we can calculate $\partial E/ \partial b_j^L$ and $\partial E/ \partial a_j^{L-1}$. Using these, the gradient of the cost function can be computed and used to update the parameters above so that the cost function is reduced. Gradient Descent is the process of adjusting the parameters in the `direction' indicated by the gradient of the cost function, such that the loss function is reduced. The size of the adjustment is called the `learning rate', and this affects how quickly the model adjusts its parameters.
 
 This adjustment is applied to all of the network's layers as part of the backpropagation process and for each of the training examples. One iteration of the combined training process is known as an Epoch (Forward Propagation, Cost Calculation, and Backpropagation using Gradient Descent) \citep{Sharma}, and this is applied recursively until the loss function is sufficiently small. The smaller the learning rate, the more epochs are typically required to reach the minimum loss required. Once all of the epochs are completed, and the training process has reached a local minimum, the model is ready to produce predictions. However, it may not necessarily have reached a global minimum, meaning that predictions may not be completely optimal.
